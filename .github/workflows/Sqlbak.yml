@@ -1,0 +1,56 @@
+name: PostgreSQL Backup To Repo
+
+on:
+  #push:
+  #  branches:
+  #    - main
+  workflow_dispatch:
+  #schedule:
+  #  # Set the schedule when you want to run this backup (e.g., daily at midnight).
+  #  - cron: '0 1 * * *'
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+
+      - name: Add PostgreSQL repository
+        run: |
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt-get update
+
+      - name: Install PostgreSQL client 16
+        run: |
+          sudo apt-get install postgresql-client-16
+
+      - name: Dump PostgreSQL database
+        run: |
+          timestamp=$(date '+%d-%m-%Y_%H-%M-%S')
+          filename="SQL_BACKUP_${timestamp}.sql"
+          /usr/lib/postgresql/16/bin/pg_dump -Fc -d ${{ secrets.DATABASE }} -f ${{ github.workspace }}/$filename >/dev/null
+
+      - name: Encrypt SQL file
+        run: |
+          echo "${{ secrets.PASS }}" | gpg --batch --yes --passphrase-fd 0 --cipher-algo AES256 --symmetric ${{ github.workspace }}/*.sql >/dev/null
+          rm ${{ github.workspace }}/*.sql
+
+      - name: Create backup directory
+        run: mkdir -p backup/SQL
+
+      - name: Move backup files to the backup directory
+        run: mv ${{ github.workspace }}/*.sql.gpg backup/SQL/
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+
+      - name: Commit and push backup files
+        run: |
+          git add backup/SQL/*.sql.gpg
+          git commit -m "Backup file"
+          git push

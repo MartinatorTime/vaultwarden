@@ -1,0 +1,54 @@
+FROM vaultwarden/server:latest
+
+# Set Env
+ENV ROCKET_PROFILE="release" \
+  ROCKET_ADDRESS=0.0.0.0 \
+  ROCKET_PORT=8080 \
+  WEBSOCKET_ADDRESS=0.0.0.0 \
+  WEBSOCKET_PORT=3012 \
+  SSL_CERT_DIR=/etc/ssl/certs \
+  EMERGENCY_ACCESS_ALLOWED=true \
+  EXTENDED_LOGGING=false \
+  ICON_SERVICE=google \
+  IP_HEADER=X-Forwarded-For \
+  LOG_LEVEL=Info \
+  ORG_CREATION_USERS=all \
+  ORG_EVENTS_ENABLED=false \
+  ORG_GROUPS_ENABLED=false \
+  PUSH_ENABLED=true \
+  RELOAD_TEMPLATES=false \
+  ROCKET_WORKERS=50 \
+  SENDS_ALLOWED=true \
+  SHOW_PASSWORD_HINT=false \
+  SIGNUPS_ALLOWED=false \
+  SIGNUPS_VERIFY=false \
+  USE_SYSLOG=false \
+  WEBSOCKET_ENABLED=true \
+  WEB_VAULT_ENABLED=true \
+  DOMAIN=https://fly.martinatortime.us.to \
+  DOMAIN_NAME=fly.martinatortime.us.to
+# Install needed packages
+RUN apt-get update && \
+    apt-get install -y sqlite3 git wget curl tar lsof jq gpg ca-certificates openssl tmux && \
+    rm -rf /var/lib/apt/lists/*
+    
+# Copy files to docker
+COPY config/crontab .
+COPY config/Procfile .
+COPY config/Caddyfile /etc/caddy/Caddyfile
+
+COPY packages/caddy /usr/local/bin/caddy
+COPY packages/overmind /usr/local/bin/overmind
+COPY packages/supercronic /usr/local/bin/supercronic
+
+COPY scripts/restore.sh /restore.sh
+COPY scripts/backup-data-fly.sh /backup-data.sh
+
+# Chmod the scripts
+RUN chmod +x /restore.sh
+RUN chmod +x /backup-data.sh
+RUN chmod +x /usr/local/bin/caddy
+RUN chmod +x /usr/local/bin/supercronic
+RUN chmod +x /usr/local/bin/overmind
+
+CMD ["overmind", "start"]

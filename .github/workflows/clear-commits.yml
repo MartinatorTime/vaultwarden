@@ -1,0 +1,28 @@
+name: Clear commits
+
+on:
+
+  workflow_dispatch:
+   
+jobs:          
+  clear-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Main Branch
+        uses: actions/checkout@master
+        with:
+          ref: main
+      - name: Set Git User
+        run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+      - name: Clear Repo
+        run: |
+          git checkout --orphan new-main
+          git add -A
+          git commit -am "Initial commit"
+          git branch -D main
+          git branch -m main
+          git push -f origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
