@@ -1,24 +1,4 @@
-# Use a base image with Rust and necessary tools
-FROM rust:latest as builder
-
-# Set the working directory
-WORKDIR /app
-
-# Install build dependencies
-RUN apt-get update && apt-get install -y \
-    cmake \
-    git \
-    libssl-dev \
-    libpq-dev   # Install PostgreSQL development libraries
-
-# Clone the Vaultwarden source code
-RUN git clone https://github.com/dani-garcia/vaultwarden.git .
-
-# Build Vaultwarden with PostgreSQL as the database backend
-RUN cargo build --release --features sqlite
-
-# Create a smaller final image
-FROM debian:bullseye-slim
+FROM vaultwarden/server:latest
 
 # Set environment variables
 ENV ROCKET_PROFILE="release" \
@@ -52,27 +32,40 @@ RUN apt-get update && \
     apt-get install -y sqlite3 libpq5 git wget curl tar lsof jq gpg ca-certificates openssl tmux && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy the built binary from the builder stage
-COPY --from=builder /app/target/release/vaultwarden /usr/local/bin/vaultwarden
+
+# Download and extract Caddy
+RUN wget -O caddy.tar.gz "https://github.com/caddyserver/caddy/releases/download/v2.7.5/caddy_2.7.5_linux_amd64.tar.gz" \
+    && tar -xzf caddy.tar.gz -C /usr/local/bin/ caddy
+
+# Download and extract Overmind
+RUN wget -O overmind.gz "https://github.com/DarthSim/overmind/releases/download/v2.4.0/overmind-v2.4.0-linux-amd64.gz" \
+    && gunzip overmind.gz \
+    && chmod +x overmind \
+    && mv overmind /usr/local/bin/
+
+# Download and install SuperCronic for linux-arm64
+RUN wget -O /usr/local/bin/supercronic "https://github.com/aptible/supercronic/releases/download/v0.2.27/supercronic-linux-arm64" \
+    && chmod +x /usr/local/bin/supercronic
 
 # Copy other files
 COPY config/crontab .
 COPY config/Procfile .
 COPY config/Caddyfile /etc/caddy/Caddyfile
-COPY packages/caddy /usr/local/bin/caddy
-COPY packages/overmind /usr/local/bin/overmind
-COPY packages/supercronic /usr/local/bin/supercronic
+
+#COPY packages/caddy /usr/local/bin/caddy
+#COPY packages/overmind /usr/local/bin/overmind
+#COPY packages/supercronic /usr/local/bin/supercronic
+
 COPY scripts/restore.sh /restore.sh
 COPY scripts/backup-data-north.sh /backup-data.sh
-COPY scripts/start.sh /start.sh
 
 # Chmod the scripts
-RUN chmod +x /start.sh
 RUN chmod +x /restore.sh
 RUN chmod +x /backup-data.sh
-RUN chmod +x /usr/local/bin/caddy
-RUN chmod +x /usr/local/bin/supercronic
-RUN chmod +x /usr/local/bin/overmind
+
+#RUN chmod +x /usr/local/bin/caddy
+#RUN chmod +x /usr/local/bin/supercronic
+#RUN chmod +x /usr/local/bin/overmind
 
 # Start Vaultwarden
 CMD ["overmind", "start"]
