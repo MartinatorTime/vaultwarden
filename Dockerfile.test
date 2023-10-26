@@ -1,4 +1,4 @@
-FROM vaultwarden/server:latest AS vaultwarden
+FROM vaultwarden/server:latest
 
 # Set environment variables
 ENV ROCKET_PROFILE="release" \
@@ -51,12 +51,6 @@ VOLUME /data
 EXPOSE 80
 
 WORKDIR /
-
-COPY --from=vaultwarden /web-vault ./web-vault
-COPY --from=vaultwarden /vaultwarden .
-
-COPY --from=vaultwarden /healthcheck.sh .
-COPY --from=vaultwarden /start.sh .
 
 # Copy other files
 COPY config/crontab .
