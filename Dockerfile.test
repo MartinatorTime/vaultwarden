@@ -1,3 +1,5 @@
+FROM vaultwarden/server:latest
+
 # Define build arguments for version numbers
 ARG CADDY_VERSION=2.7.5
 ARG OVERMIND_VERSION=2.4.0
