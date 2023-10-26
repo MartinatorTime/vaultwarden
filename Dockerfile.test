@@ -39,7 +39,7 @@ RUN apt-get update && \
 
 # Download and extract Caddy (latest release)
 RUN CADDY_VERSION=$(curl -s https://api.github.com/repos/caddyserver/caddy/releases/latest | jq -r '.tag_name') \
-    && echo "$CADDY_VERSION"
+    && echo "$CADDY_VERSION" \
     && wget -O caddy.tar.gz "https://github.com/caddyserver/caddy/releases/download/$CADDY_VERSION/caddy_${CADDY_VERSION#v}_linux_amd64.tar.gz" \
     && tar -xzf caddy.tar.gz -C /usr/local/bin/ caddy
 
