@@ -1,0 +1,33 @@
+name: Delete Old Releases
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  delete_old_releases:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Delete old releases
+      run: |
+        ACCESS_TOKEN=${{ secrets.GITHUB_TOKEN }}
+        REPO_OWNER=MartinatorTime
+        REPO_NAME=vaultwarden
+
+        RELEASES=$(curl -H "Authorization: token $ACCESS_TOKEN" \
+          -H "Accept: application/vnd.github.v3+json" \
+          "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases")
+
+        for release in $(echo $RELEASES | jq -r '.[] | select(.published_at | fromdateiso8601 < (now - 7*24*3600)) | .id'); do
+          echo "Deleting release $release"
+          curl -X DELETE -H "Authorization: token $ACCESS_TOKEN" \
+            "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/$release"
+        done
+
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
