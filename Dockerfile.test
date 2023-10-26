@@ -38,39 +38,34 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 
-# Get the latest release URLs and filenames for Caddy, SuperCronic, Overmind, and Web-Vau
-RUN caddyFilename=$(curl -s https://api.github.com/repos/caddyserver/caddy/releases/latest | jq -r '.assets[] | select(.name | test("caddy_.*_linux_amd64.tar.gz")) | .name') && \
-    caddyReleaseURL=$(curl -s https://api.github.com/repos/caddyserver/caddy/releases/latest | jq -r '.assets[] | select(.name | test("caddy_.*_linux_amd64.tar.gz")) | .browser_download_url') && \
-    supercronicFilename=$(curl -s https://api.github.com/repos/aptible/supercronic/releases/latest | jq -r '.assets[] | select(.name | test("supercronic-linux-amd64")) | .name') && \
-    supercronicReleaseURL=$(curl -s https://api.github.com/repos/aptible/supercronic/releases/latest | jq -r '.assets[] | select(.name | test("supercronic-linux-amd64")) | .browser_download_url') && \
-    overmindFilename=$(curl -s https://api.github.com/repos/DarthSim/overmind/releases/latest | jq -r '.assets[] | select(.name | test("overmind-v.*-linux-amd64")) | .name') && \
-    overmindReleaseURL=$(curl -s https://api.github.com/repos/DarthSim/overmind/releases/latest | jq -r '.assets[] | select(.name | test("overmind-v.*-linux-amd64")) | .browser_download_url') && \
-    vaultFilename=$(curl -s https://api.github.com/repos/dani-garcia/bw_web_builds/releases/latest | jq -r '.assets[] | select(.name | test("bw_web_v.*.tar.gz")) | .name') && \
-    vaultReleaseURL=$(curl -s https://api.github.com/repos/dani-garcia/bw_web_builds/releases/latest | jq -r '.assets[] | select(.name | test("bw_web_v.*.tar.gz")) | .browser_download_url')
+# Download and extract Caddy
+RUN wget -O caddy.tar.gz "https://github.com/caddyserver/caddy/releases/download/v2.7.5/caddy_2.7.5_linux_amd64.tar.gz" \
+    && tar -xzf caddy.tar.gz -C /usr/local/bin/ caddy
 
-# Remove the existing folders if they exist
-RUN rm -rf /web-vault /usr/local/bin/caddy /usr/local/bin/overmind /usr/local/bin/supercronic
+# Download and extract Overmind
+RUN wget -O overmind.gz "https://github.com/DarthSim/overmind/releases/download/v2.4.0/overmind-v2.4.0-linux-amd64.gz" \
+    && gunzip overmind.gz \
+    && chmod +x overmind \
+    && mv overmind /usr/local/bin/
 
-# Download and extract the latest releases
-RUN curl -L -o "/web-vault.tar.gz" "$vaultReleaseURL" && \
-    tar -xzf "/web-vault.tar.gz" -C / && \
-    curl -L -o "/caddy.tar.gz" "$caddyReleaseURL" && \
-    tar -xzf "/caddy.tar.gz" -C /usr/local/bin/ caddy && \
-    curl -L -o "/overmind.gz" "$overmindReleaseURL" && \
-    gunzip "/overmind.gz" && \
-    chmod +x "/overmind" && \
-    mv "/overmind" /usr/local/bin/ && \
-    curl -L -o "/supercronic" "$supercronicReleaseURL" && \
-    chmod +x "/supercronic" && \
-    mv "/supercronic" /usr/local/bin/
+# Download and install SuperCronic for linux-arm64
+RUN wget -O /usr/local/bin/supercronic "https://github.com/aptible/supercronic/releases/download/v0.2.27/supercronic-linux-amd64" \
+    && chmod +x /usr/local/bin/supercronic
 
-# Clean up downloaded archive files
-RUN rm "/web-vault.tar.gz" "/caddy.tar.gz"
+
+# Download and install Last Web-Vault
+RUN rm -rf /web-vault
+RUN wget -O vault.tar.gz "https://github.com/dani-garcia/bw_web_builds/releases/download/v2023.9.1/bw_web_v2023.9.1.tar.gz" \
+    && tar -xzf vault.tar.gz -C /
 
 # Copy other files
 COPY config/crontab .
 COPY config/Procfile .
 COPY config/Caddyfile /etc/caddy/Caddyfile
+
+#COPY packages/caddy /usr/local/bin/caddy
+#COPY packages/overmind /usr/local/bin/overmind
+#COPY packages/supercronic /usr/local/bin/supercronic
 
 COPY scripts/restore.sh /restore.sh
 COPY scripts/backup-data-north.sh /backup-data.sh
@@ -78,6 +73,10 @@ COPY scripts/backup-data-north.sh /backup-data.sh
 # Chmod the scripts
 RUN chmod +x /restore.sh
 RUN chmod +x /backup-data.sh
+
+#RUN chmod +x /usr/local/bin/caddy
+#RUN chmod +x /usr/local/bin/supercronic
+#RUN chmod +x /usr/local/bin/overmind
 
 # Start Vaultwarden
 CMD ["overmind", "start"]
