@@ -1,4 +1,6 @@
-FROM vaultwarden/web-vault:v2023.9.1
+FROM vaultwarden/server:latest
+
+FROM vaultwarden/web-vault:v2023.9.1 as vault
 
 # Set environment variables
 ENV ROCKET_PROFILE="release" \
@@ -47,10 +49,12 @@ RUN wget -O /usr/local/bin/supercronic "https://github.com/aptible/supercronic/r
     && chmod +x /usr/local/bin/supercronic
 
 VOLUME /data
-
 EXPOSE 80
+EXPOSE 3012
 
 WORKDIR /
+
+COPY --from=vault /web-vault ./web-vault
 
 # Copy other files
 COPY config/crontab .
