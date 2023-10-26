@@ -61,17 +61,16 @@ RUN SUPERCRONIC_VERSION=$(curl -s https://api.github.com/repos/aptible/supercron
 RUN rm -rf /web-vault
 RUN VAULT_VERSION=$(curl -s https://api.github.com/repos/dani-garcia/bw_web_builds/releases/latest | jq -r '.tag_name') \
     && echo "$VAULT_VERSION" \
-    && wget -O vault.tar.gz "https://github.com/dani-garcia/bw_web_builds/releases/download/${VAULT_VERSION}/bw_web_v${VAULT_VERSION#v}.tar.gz" \
-    && tar -xzf vault.tar.gz -C /
+    && wget -O web-vault.tar.gz "https://github.com/dani-garcia/bw_web_builds/releases/download/${VAULT_VERSION}/bw_web_v${VAULT_VERSION#v}.tar.gz" \
+    && tar -xzf web-vault.tar.gz -C /
+
+# Delete downloaded archives
+RUN rm -rf caddy.tar.gz overmind.gz web-vault.tar.gz
 
 # Copy other files
 COPY config/crontab .
 COPY config/Procfile .
 COPY config/Caddyfile /etc/caddy/Caddyfile
-
-#COPY packages/caddy /usr/local/bin/caddy
-#COPY packages/overmind /usr/local/bin/overmind
-#COPY packages/supercronic /usr/local/bin/supercronic
 
 COPY scripts/restore.sh /restore.sh
 COPY scripts/backup-data-north.sh /backup-data.sh
@@ -79,10 +78,6 @@ COPY scripts/backup-data-north.sh /backup-data.sh
 # Chmod the scripts
 RUN chmod +x /restore.sh
 RUN chmod +x /backup-data.sh
-
-#RUN chmod +x /usr/local/bin/caddy
-#RUN chmod +x /usr/local/bin/supercronic
-#RUN chmod +x /usr/local/bin/overmind
 
 # Start Vaultwarden
 CMD ["overmind", "start"]
