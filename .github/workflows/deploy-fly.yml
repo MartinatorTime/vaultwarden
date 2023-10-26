@@ -1,16 +1,15 @@
 name: Deploy to Fly
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
   push:
     branches:
       - main
     paths:
       - Dockerfile.fly
       - fly.toml
-    #  - config/**
-    #  - scripts/**
-    #  - packages/**
+      - config/**
+      - scripts/**
       
 jobs:
   check-fly-secret:
@@ -37,7 +36,7 @@ jobs:
     steps:
       - uses: superfly/flyctl-actions/setup-flyctl@master
         with:
-          version: 0.1.54
+          version: 0.1.112
       - name: Install Task
         uses: arduino/setup-task@v1
         with:
@@ -47,7 +46,7 @@ jobs:
       - name: Rewrite secrets
         run: |
           #Remove previous secrets
-          #flyctl secrets unset DATABASE_URL PUSH_INSTALLATION_ID PUSH_INSTALLATION_KEY
+          #flyctl secrets unset DATABASE_URL PUSH_INSTALLATION_ID PUSH_INSTALLATION_KEY PASS GITHUB_TOKEN
           #Set New Secrets
           flyctl secrets set DATABASE_URL="${{ secrets.DATABASE }}" --stage
           flyctl secrets set PUSH_INSTALLATION_ID="${{ secrets.PUSH_INSTALLATION_ID }}" --stage
