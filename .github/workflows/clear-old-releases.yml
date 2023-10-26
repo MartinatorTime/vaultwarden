@@ -1,4 +1,4 @@
-name: Delete Old Releases
+name: Delete Old Release Files
 
 on:
   workflow_dispatch:
@@ -6,28 +6,27 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
-  delete_old_releases:
+  delete_old_files:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Check out code
+        uses: actions/checkout@v2
 
-    - name: Delete old releases
-      run: |
-        ACCESS_TOKEN=${{ secrets.GITHUB_TOKEN }}
-        REPO_OWNER=MartinatorTime
-        REPO_NAME=vaultwarden
+      - name: Set up Git
+        run: git config --global user.email "actions@github.com" && git config --global user.name "GitHub Actions"
 
-        RELEASES=$(curl -H "Authorization: token $ACCESS_TOKEN" \
-          -H "Accept: application/vnd.github.v3+json" \
-          "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases")
-
-        for release in $(echo $RELEASES | jq -r '.[] | select(.published_at | fromdateiso8601 < (now - 7*24*3600)) | .id'); do
-          echo "Deleting release $release"
-          curl -X DELETE -H "Authorization: token $ACCESS_TOKEN" \
-            "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases/$release"
-        done
-
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: List releases
+        run: |
+          for release in $(gh release list -L 100 | awk '{if(NR>1)print $1}'); do
+            release_date=$(gh release view $release | grep "Created: " | awk '{print $2}')
+            release_timestamp=$(date -d "$release_date" +%s)
+            current_timestamp=$(date +%s)
+            age_in_days=$(((current_timestamp - release_timestamp) / 86400))
+            if [ $age_in_days -gt 7 ]; then
+              echo "Deleting files in release $release (created $age_in_days days ago)"
+              for file in $(gh release view $release --json name -q ".assets[].name" | jq -r .[]); do
+                gh release delete $release --title $file
+              done
+            fi
+          done
