@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
 RUN git clone https://github.com/dani-garcia/vaultwarden.git .
 
 # Build Vaultwarden with PostgreSQL as the database backend
-RUN cargo build --release --features postgres
+RUN cargo build --release --features sqlite
 
 # Create a smaller final image
 FROM debian:bullseye-slim
