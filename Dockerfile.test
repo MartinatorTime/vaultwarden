@@ -46,7 +46,7 @@ RUN CADDY_VERSION=$(curl -s https://api.github.com/repos/caddyserver/caddy/relea
 # Download and extract Overmind (latest release)
 RUN OVERMIND_VERSION=$(curl -s https://api.github.com/repos/DarthSim/overmind/releases/latest | jq -r '.tag_name') \
     && echo "$OVERMIND_VERSION" \
-    && wget -O overmind.gz "https://github.com/DarthSim/overmind/releases/download/$OVERMIND_VERSION/overmind-${OVERMIND_VERSION#v}-linux-amd64.gz" \
+    && wget -O overmind.gz "https://github.com/DarthSim/overmind/releases/download/$OVERMIND_VERSION/overmind-${OVERMIND_VERSION}-linux-amd64.gz" \
     && gunzip overmind.gz \
     && chmod +x overmind \
     && mv overmind /usr/local/bin/
