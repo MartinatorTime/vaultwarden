@@ -47,7 +47,7 @@ RUN wget -O overmind.gz "https://github.com/DarthSim/overmind/releases/download/
 RUN wget -O /usr/local/bin/supercronic "https://github.com/aptible/supercronic/releases/download/v0.2.27/supercronic-linux-amd64" \
     && chmod +x /usr/local/bin/supercronic
 
-rm -rf ./web-vault
+RUN rm -rf ./web-vault
 
 # Download and install Last Web-Vault
 RUN wget -O vault.tar.gz "https://github.com/dani-garcia/bw_web_builds/releases/download/v2023.9.1/bw_web_v2023.9.1.tar.gz" \
