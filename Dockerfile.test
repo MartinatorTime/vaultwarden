@@ -53,14 +53,17 @@ RUN rm -rf /web-vault /usr/local/bin/caddy /usr/local/bin/overmind /usr/local/bi
 
 # Download and extract the latest releases
 RUN curl -L -o "/web-vault.tar.gz" "$vaultReleaseURL" && \
-    tar -xzf "/web-vault.tar.gz" -C / && \
-    curl -L -o "/caddy.tar.gz" "$caddyReleaseURL" && \
-    tar -xzf "/caddy.tar.gz" -C /usr/local/bin/ caddy && \
-    curl -L -o "/overmind.gz" "$overmindReleaseURL" && \
+    tar -xzf "/web-vault.tar.gz" -C / 
+
+RUN curl -L -o "/caddy.tar.gz" "$caddyReleaseURL" && \
+    tar -xzf "/caddy.tar.gz" -C /usr/local/bin/ caddy
+
+RUN curl -L -o "/overmind.gz" "$overmindReleaseURL" && \
     gunzip "/overmind.gz" && \
     chmod +x "/overmind" && \
-    mv "/overmind" /usr/local/bin/ && \
-    curl -L -o "/supercronic" "$supercronicReleaseURL" && \
+    mv "/overmind" /usr/local/bin/
+
+RUN curl -L -o "/supercronic" "$supercronicReleaseURL" && \
     chmod +x "/supercronic" && \
     mv "/supercronic" /usr/local/bin/
 
