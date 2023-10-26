@@ -67,8 +67,7 @@ COPY config/Caddyfile /etc/caddy/Caddyfile
 COPY scripts/restore.sh /restore.sh
 COPY scripts/backup-data-north.sh /backup-data.sh
 
-# Chmod the scripts and Vaultwarden binary
-RUN chmod +x /usr/local/bin/vaultwarden
+# Chmod the scripts
 RUN chmod +x /restore.sh
 RUN chmod +x /backup-data.sh
 
