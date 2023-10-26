@@ -1,0 +1,63 @@
+name: PostgreSQL Restore From Releases
+
+on:
+  workflow_dispatch:
+    inputs:
+      filename:
+        description: 'Backup file name'
+        required: true
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+
+      - name: Find file in releases
+        id: find_release_file
+        run: |
+          OWNER="MartinatorTime"
+          REPO="vaultwarden"
+          FILE_NAME="${{ github.event.inputs.filename }}"
+          GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          API_URL="https://api.github.com/repos/$OWNER/$REPO"
+
+          TAGS=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" $API_URL/releases | jq -r '.[].tag_name')
+
+          for TAG in $TAGS; do
+            ASSET_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" $API_URL/releases/tags/$TAG | jq -r --arg FILENAME "$FILE_NAME" '.assets[] | select(.name == $FILENAME) | .id')
+
+            if [[ -n $ASSET_ID ]]; then
+              echo "::set-output name=asset_id::$ASSET_ID"
+              break
+            fi
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+
+      - name: Download file from release
+        run: |
+          ASSET_ID=${{ steps.find_release_file.outputs.asset_id }}
+          if [[ -n $ASSET_ID ]]; then
+            API_URL="https://api.github.com/repos/$OWNER/$REPO"
+            curl -s -L -H "Authorization: Bearer $GITHUB_TOKEN" -o ${{ github.workspace }}/${{ github.event.inputs.filename }} "$API_URL/releases/assets/$ASSET_ID"
+          else
+            echo "File not found in releases."
+            exit 1
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+
+      - name: Decrypt and Restore SQL file
+        run: |
+          echo "${{ secrets.PASS }}" | gpg --batch --yes --passphrase-fd 0 -d ${{ github.workspace }}/${{ github.event.inputs.filename }}
+          /usr/lib/postgresql/16/bin/pg_restore -c -d ${{ secrets.DATABASE }} ${{ github.workspace }}/*.sql
+          rm ${{ github.workspace }}/*.sql
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DATABASE: ${{ secrets.DATABASE }}
+        shell: bash
