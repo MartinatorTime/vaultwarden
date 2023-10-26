@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1-labs
-FROM public.ecr.aws/docker/library/alpine:3.18 AS base
+FROM alpine:latest AS base
 ENV TZ=UTC
 WORKDIR /src
 
