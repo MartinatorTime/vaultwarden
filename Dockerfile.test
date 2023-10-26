@@ -8,13 +8,14 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     cmake \
     git \
-    libssl-dev
+    libssl-dev \
+    libpq-dev   # Install PostgreSQL development libraries
 
 # Clone the Vaultwarden source code
 RUN git clone https://github.com/dani-garcia/vaultwarden.git .
 
-# Build Vaultwarden
-RUN cargo build --release
+# Build Vaultwarden with PostgreSQL as the database backend
+RUN cargo build --release --features postgres
 
 # Create a smaller final image
 FROM debian:bullseye-slim
@@ -48,7 +49,7 @@ ENV ROCKET_PROFILE="release" \
 
 # Install runtime dependencies
 RUN apt-get update && \
-    apt-get install -y sqlite3 git wget curl tar lsof jq gpg ca-certificates openssl tmux && \
+    apt-get install -y sqlite3 libpq5 git wget curl tar lsof jq gpg ca-certificates openssl tmux && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy the built binary from the builder stage
