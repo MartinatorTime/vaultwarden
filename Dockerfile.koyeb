@@ -52,5 +52,5 @@ RUN chmod +x /usr/local/bin/caddy
 RUN chmod +x /usr/local/bin/supercronic
 RUN chmod +x /usr/local/bin/overmind
 
-COPY *.tar.gz.gpg .
+#COPY *.tar.gz.gpg .
 CMD ["overmind", "start"]
