@@ -27,6 +27,10 @@ ENV ROCKET_PROFILE="release" \
     DOMAIN=https://north.martinatortime.us.to \
     DOMAIN_NAME=north.martinatortime.us.to
 
+VOLUME /data
+EXPOSE 80
+EXPOSE 3012
+
 # Install runtime dependencies
 RUN apt-get update && \
     apt-get install -y sqlite3 libpq5 git wget curl tar lsof jq gpg ca-certificates openssl tmux && \
