@@ -1,16 +1,3 @@
-# Use the Rust image for building Vaultwarden
-FROM rust:latest AS builder
-
-# Set the working directory
-WORKDIR /app
-
-# Clone the Vaultwarden source code from GitHub
-RUN git clone https://github.com/dani-garcia/vaultwarden.git .
-
-# Build Vaultwarden
-RUN cargo build --release --features sqlite
-
-# Create a new stage for the final image
 FROM vaultwarden/server:latest AS vaultwarden
 
 # Set environment variables
@@ -75,9 +62,6 @@ COPY --from=vaultwarden /start.sh .
 COPY config/crontab .
 COPY config/Procfile .
 COPY config/Caddyfile /etc/caddy/Caddyfile
-
-# Copy the built Vaultwarden binary from the builder stage
-COPY --from=builder /app/target/release/vaultwarden /usr/local/bin/vaultwarden
 
 # Copy other scripts
 COPY scripts/restore.sh /restore.sh
