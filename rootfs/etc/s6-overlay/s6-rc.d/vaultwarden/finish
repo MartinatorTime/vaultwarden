@@ -1,4 +1,0 @@
-#!/usr/bin/execlineb -P
-
-# allowed to fail (exit code 0-100) 3 times on 60 seconds interval
-s6-permafailon 60 3 0-100
