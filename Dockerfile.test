@@ -44,7 +44,7 @@ RUN wget -O overmind.gz "https://github.com/DarthSim/overmind/releases/download/
     && mv overmind /usr/local/bin/
 
 # Download and install SuperCronic for linux-arm64
-RUN wget -O /usr/local/bin/supercronic "https://github.com/aptible/supercronic/releases/download/v0.2.27/supercronic-linux-arm64" \
+RUN wget -O /usr/local/bin/supercronic "https://github.com/aptible/supercronic/releases/download/v0.2.27/supercronic-linux-amd64" \
     && chmod +x /usr/local/bin/supercronic
 
 # Copy other files
