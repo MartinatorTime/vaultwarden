@@ -11,7 +11,7 @@ RUN git clone https://github.com/dani-garcia/vaultwarden.git .
 RUN cargo build --release --features sqlite
 
 # Create a new stage for the final image
-FROM vaultwarden/server:latest
+FROM vaultwarden/server:latest AS vaultwarden
 
 # Set environment variables
 ENV ROCKET_PROFILE="release" \
@@ -59,6 +59,18 @@ RUN wget -O overmind.gz "https://github.com/DarthSim/overmind/releases/download/
 RUN wget -O /usr/local/bin/supercronic "https://github.com/aptible/supercronic/releases/download/v0.2.27/supercronic-linux-amd64" \
     && chmod +x /usr/local/bin/supercronic
 
+VOLUME /data
+
+EXPOSE 80
+
+WORKDIR /
+
+COPY --from=vaultwarden /web-vault ./web-vault
+COPY --from=vaultwarden /vaultwarden .
+
+COPY --from=vaultwarden /healthcheck.sh .
+COPY --from=vaultwarden /start.sh .
+
 # Copy other files
 COPY config/crontab .
 COPY config/Procfile .
@@ -70,7 +82,6 @@ COPY --from=builder /app/target/release/vaultwarden /usr/local/bin/vaultwarden
 # Copy other scripts
 COPY scripts/restore.sh /restore.sh
 COPY scripts/backup-data-north.sh /backup-data.sh
-COPY start.sh /start.sh
 
 # Chmod the scripts and Vaultwarden binary
 RUN chmod +x /usr/local/bin/vaultwarden
