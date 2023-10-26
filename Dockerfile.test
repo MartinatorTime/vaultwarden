@@ -38,14 +38,10 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 
-# Get the latest release URLs and filenames for Caddy, SuperCronic, Overmind, and Web-Vault
-RUN caddyFilename=$(curl -s https://api.github.com/repos/caddyserver/caddy/releases/latest | jq -r '.assets[] | select(.name | test("caddy_.*_linux_amd64.tar.gz")) | .name') && \
-    caddyReleaseURL=$(curl -s https://api.github.com/repos/caddyserver/caddy/releases/latest | jq -r '.assets[] | select(.name | test("caddy_.*_linux_amd64.tar.gz")) | .browser_download_url') && \
-    supercronicFilename=$(curl -s https://api.github.com/repos/aptible/supercronic/releases/latest | jq -r '.assets[] | select(.name | test("supercronic-linux-amd64")) | .name') && \
+# Get the latest release URLs for Caddy, SuperCronic, Overmind, and Web-Vault
+RUN caddyReleaseURL=$(curl -s https://api.github.com/repos/caddyserver/caddy/releases/latest | jq -r '.assets[] | select(.name | test("caddy_.*_linux_amd64.tar.gz")) | .browser_download_url') && \
     supercronicReleaseURL=$(curl -s https://api.github.com/repos/aptible/supercronic/releases/latest | jq -r '.assets[] | select(.name | test("supercronic-linux-amd64")) | .browser_download_url') && \
-    overmindFilename=$(curl -s https://api.github.com/repos/DarthSim/overmind/releases/latest | jq -r '.assets[] | select(.name | test("overmind-v.*-linux-amd64")) | .name') && \
     overmindReleaseURL=$(curl -s https://api.github.com/repos/DarthSim/overmind/releases/latest | jq -r '.assets[] | select(.name | test("overmind-v.*-linux-amd64")) | .browser_download_url') && \
-    vaultFilename=$(curl -s https://api.github.com/repos/dani-garcia/bw_web_builds/releases/latest | jq -r '.assets[] | select(.name | test("bw_web_v.*.tar.gz")) | .name') && \
     vaultReleaseURL=$(curl -s https://api.github.com/repos/dani-garcia/bw_web_builds/releases/latest | jq -r '.assets[] | select(.name | test("bw_web_v.*.tar.gz")) | .browser_download_url')
 
 # Remove the existing folders if they exist
