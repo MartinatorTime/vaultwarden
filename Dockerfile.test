@@ -49,7 +49,7 @@ RUN wget -O /usr/local/bin/supercronic "https://github.com/aptible/supercronic/r
 
 # Download and install Last Web-Vault
 RUN wget -O vault.tar.gz "https://github.com/dani-garcia/bw_web_builds/releases/download/v2023.9.1/bw_web_v2023.9.1.tar.gz" \
-    && tar -xzf vault.tar.gz -C /web-vault ./web-vault
+    && tar -xzf vault.tar.gz -C /web-vault
 
 # Copy other files
 COPY config/crontab .
