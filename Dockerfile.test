@@ -68,7 +68,7 @@ RUN VAULT_VERSION=$(curl -s https://api.github.com/repos/dani-garcia/bw_web_buil
 RUN rm -rf caddy.tar.gz overmind.gz web-vault.tar.gz
 
 # Copy other files
-COPY config/crons/ ./crons
+COPY config/crontab .
 COPY config/Procfile .
 COPY config/Caddyfile /etc/caddy/Caddyfile
 
