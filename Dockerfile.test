@@ -65,7 +65,12 @@ COPY packages/supercronic /usr/local/bin/supercronic
 COPY scripts/restore.sh /restore.sh
 COPY scripts/backup-data-north.sh /backup-data.sh
 
+COPY ./docker/healthcheck.sh /healthcheck.sh
+COPY ./docker/start.sh /start.sh
+
 # Chmod the scripts
+RUN chmod +x /start.sh
+RUN chmod +x /healthcheck.sh
 RUN chmod +x /restore.sh
 RUN chmod +x /backup-data.sh
 RUN chmod +x /usr/local/bin/caddy
