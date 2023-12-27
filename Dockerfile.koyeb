@@ -1,0 +1,82 @@
+FROM vaultwarden/server:latest
+
+# Set Env
+ENV ROCKET_PROFILE="release" \
+    ROCKET_ADDRESS=0.0.0.0 \
+    ROCKET_PORT=8080 \
+    WEBSOCKET_ADDRESS=0.0.0.0 \
+    WEBSOCKET_PORT=3012 \
+    SSL_CERT_DIR=/etc/ssl/certs \
+    EMERGENCY_ACCESS_ALLOWED=true \
+    EXTENDED_LOGGING=false \
+    ICON_SERVICE=google \
+    IP_HEADER=X-Forwarded-For \
+    LOG_LEVEL=Info \
+    ORG_CREATION_USERS=all \
+    ORG_EVENTS_ENABLED=false \
+    ORG_GROUPS_ENABLED=false \
+    PUSH_ENABLED=true \
+    RELOAD_TEMPLATES=false \
+    ROCKET_WORKERS=50 \
+    SENDS_ALLOWED=true \
+    SHOW_PASSWORD_HINT=false \
+    SIGNUPS_ALLOWED=false \
+    SIGNUPS_VERIFY=false \
+    USE_SYSLOG=false \
+    WEBSOCKET_ENABLED=true \
+    WEB_VAULT_ENABLED=true \
+    DOMAIN=https://koyeb.martinatortime.us.to \
+    DOMAIN_NAME=koyeb.martinatortime.us.to
+  
+VOLUME /data
+EXPOSE 80
+EXPOSE 3012
+
+# Install runtime dependencies
+RUN apt-get update && \
+    apt-get install -y sqlite3 libpq5 git wget curl tar lsof jq gpg ca-certificates openssl tmux && \
+    rm -rf /var/lib/apt/lists/*
+
+# Download and extract Caddy (latest release)
+RUN CADDY_VERSION=$(curl -s https://api.github.com/repos/caddyserver/caddy/releases/latest | jq -r '.tag_name') \
+    && echo "$CADDY_VERSION" \
+    && wget -O caddy.tar.gz "https://github.com/caddyserver/caddy/releases/download/$CADDY_VERSION/caddy_${CADDY_VERSION#v}_linux_amd64.tar.gz" \
+    && tar -xzf caddy.tar.gz -C /usr/local/bin/ caddy
+
+# Download and extract Overmind (latest release)
+RUN OVERMIND_VERSION=$(curl -s https://api.github.com/repos/DarthSim/overmind/releases/latest | jq -r '.tag_name') \
+    && echo "$OVERMIND_VERSION" \
+    && wget -O overmind.gz "https://github.com/DarthSim/overmind/releases/download/$OVERMIND_VERSION/overmind-${OVERMIND_VERSION}-linux-amd64.gz" \
+    && gunzip overmind.gz \
+    && chmod +x overmind \
+    && mv overmind /usr/local/bin/
+
+# Download and install SuperCronic for linux-amd64 (latest release)
+RUN SUPERCRONIC_VERSION=$(curl -s https://api.github.com/repos/aptible/supercronic/releases/latest | jq -r '.tag_name') \
+    && echo "$SUPERCRONIC_VERSION" \
+    && wget -O /usr/local/bin/supercronic "https://github.com/aptible/supercronic/releases/download/${SUPERCRONIC_VERSION}/supercronic-linux-amd64" \
+    && chmod +x /usr/local/bin/supercronic
+
+# Download and install Last Web-Vault (latest release)
+RUN rm -rf /web-vault
+RUN VAULT_VERSION=$(curl -s https://api.github.com/repos/dani-garcia/bw_web_builds/releases/latest | jq -r '.tag_name') \
+    && echo "$VAULT_VERSION" \
+    && wget -O web-vault.tar.gz "https://github.com/dani-garcia/bw_web_builds/releases/download/${VAULT_VERSION}/bw_web_v${VAULT_VERSION#v}.tar.gz" \
+    && tar -xzf web-vault.tar.gz -C /
+
+# Delete downloaded archives
+RUN rm -rf caddy.tar.gz overmind.gz web-vault.tar.gz
+
+# Copy other files
+COPY config/crontab .
+COPY config/Procfile .
+COPY config/Caddyfile /etc/caddy/Caddyfile
+
+COPY scripts/manual-restore.sh /restore.sh
+COPY scripts/backup-data-koyeb.sh /backup-data.sh
+
+# Chmod the scripts
+RUN chmod +x /restore.sh
+RUN chmod +x /backup-data.sh
+
+CMD ["overmind", "start"]
