@@ -8,7 +8,6 @@ ENV ROCKET_PROFILE="release" \
     SSL_CERT_DIR=/etc/ssl/certs \
     EMERGENCY_ACCESS_ALLOWED=true \
     EXTENDED_LOGGING=true \
-    LOG_FILE=/data/logs/vaultwarden.log \
     LOG_LEVEL=trace \
     ICON_SERVICE=google \
     IP_HEADER=X-Forwarded-For \
