@@ -57,9 +57,10 @@ jobs:
           FLY_APP: ${{ secrets.FLY_APP }}
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
-      - name: Checkout code
+      - name: Checkout dev branch
         uses: actions/checkout@master
-
+        with:
+          ref: dev
           
       - name: Deploy app
         run: |

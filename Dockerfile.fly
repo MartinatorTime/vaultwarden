@@ -4,18 +4,19 @@ FROM vaultwarden/server:latest
 ENV ROCKET_PROFILE="release" \
     ROCKET_ADDRESS=0.0.0.0 \
     ROCKET_PORT=8080 \
+    ROCKET_WORKERS=50 \    
     SSL_CERT_DIR=/etc/ssl/certs \
     EMERGENCY_ACCESS_ALLOWED=true \
-    EXTENDED_LOGGING=false \
+    EXTENDED_LOGGING=true \
+    LOG_FILE=/data/logs/vaultwarden.log \
+    LOG_LEVEL=trace \
     ICON_SERVICE=google \
     IP_HEADER=X-Forwarded-For \
-    LOG_LEVEL=Info \
     ORG_CREATION_USERS=all \
     ORG_EVENTS_ENABLED=false \
     ORG_GROUPS_ENABLED=false \
     PUSH_ENABLED=true \
     RELOAD_TEMPLATES=false \
-    ROCKET_WORKERS=50 \
     SENDS_ALLOWED=true \
     SHOW_PASSWORD_HINT=false \
     SIGNUPS_ALLOWED=false \
@@ -24,7 +25,14 @@ ENV ROCKET_PROFILE="release" \
     WEBSOCKET_ENABLED=true \
     WEB_VAULT_ENABLED=true \
     DATABASE_MAX_CONNS=15 \
-    DOMAIN=https://vault.martinatortime.us.to
+    DB_CONNECTION_RETRIES=15 \
+    ICON_DOWNLOAD_TIMEOUT=20 \
+    ICON_BLACKLIST_NON_GLOBAL_IPS=true \
+    DISABLE_2FA_REMEMBER=true \
+    EMAIL_CHANGE_ALLOWED=true \
+    LOGIN_RATELIMIT_MAX_BURST=5 \
+    ADMIN_SESSION_LIFETIME=3 \
+    DOMAIN=${{ secrets.DOMAIN }}
 
 VOLUME /data
 
