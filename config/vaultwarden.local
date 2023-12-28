@@ -1,0 +1,8 @@
+# path_f2b/filter.d/vaultwarden.local
+
+[INCLUDES]
+before = common.conf
+
+[Definition]
+failregex = ^.*Username or password is incorrect\. Try again\. IP: <ADDR>\. Username:.*$
+ignoreregex =

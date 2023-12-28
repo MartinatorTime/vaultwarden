@@ -8,7 +8,8 @@ ENV ROCKET_PROFILE="release" \
     SSL_CERT_DIR=/etc/ssl/certs \
     EMERGENCY_ACCESS_ALLOWED=true \
     EXTENDED_LOGGING=true \
-    LOG_LEVEL=trace \
+    LOG_FILE=/data/vaultwarden.log \
+    LOG_LEVEL=info \
     ICON_SERVICE=google \
     IP_HEADER=X-Forwarded-For \
     ORG_CREATION_USERS=all \
@@ -74,6 +75,10 @@ COPY config/Procfile .
 
 COPY scripts/restore.sh /restore.sh
 COPY scripts/backup-data-fly.sh /backup-data.sh
+
+# Copy Fail2ban config
+COPY config/vaultwarden.local /etc/fail2ban/vaultwarden.local
+COPY config/vautvarden-jail.local /etc/fail2ban/vautvarden-jail.local
 
 # Chmod the scripts
 RUN chmod +x /restore.sh
