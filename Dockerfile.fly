@@ -32,7 +32,7 @@ ENV ROCKET_PROFILE="release" \
     EMAIL_CHANGE_ALLOWED=true \
     LOGIN_RATELIMIT_MAX_BURST=5 \
     ADMIN_SESSION_LIFETIME=3 \
-    DOMAIN=${{ secrets.DOMAIN }}
+    DOMAIN=https://vault.martinatortime.us.to
 
 VOLUME /data
 
