@@ -23,7 +23,7 @@ jobs:
       - name: Check for New Releases
         id: check-releases
         run: |
-          REPOS="dani-garcia/vaultwarden dani-garcia/bw_web_builds caddyserver/caddy cloudflare/cloudflared aptible/supercronic DarthSim/overmind"
+          REPOS="dani-garcia/vaultwarden dani-garcia/bw_web_builds cloudflare/cloudflared aptible/supercronic DarthSim/overmind"
           RELEASES_FOUND=false # Assume no releases found initially
 
           for REPO in $REPOS; do

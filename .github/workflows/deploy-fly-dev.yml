@@ -63,7 +63,7 @@ jobs:
           
       - name: Deploy app
         run: |
-          flyctl deploy --now --remote-only --no-public-ips -a $FLY_APP
+          flyctl deploy --now --no-public-ips -a $FLY_APP --no-cache --local-only
         env:
           FLY_APP: ${{ secrets.FLY_APP }}
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

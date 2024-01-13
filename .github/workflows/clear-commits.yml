@@ -1,7 +1,6 @@
 name: Clear all commits and workflow runs
 
 on:
-  push:
   workflow_dispatch:
 
 jobs:

@@ -27,10 +27,10 @@ ENV ROCKET_PROFILE="release" \
     DOMAIN=https://vault.martinatortime.us.to
 
 VOLUME /data
-
+USER root
 # Install runtime dependencies
 RUN apt-get update && \
-    apt-get install -y sqlite3 libpq5 wget curl tar lsof jq gpg ca-certificates openssl tmux procps && \
+    apt-get install -y sqlite3 libpq5 wget curl tar lsof jq gpg ca-certificates openssl tmux procps dos2unix && \
     rm -rf /var/lib/apt/lists/*
 
 # Download and extract Overmind (latest release)
@@ -60,7 +60,7 @@ RUN curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/r
 
 # Delete downloaded archives
 RUN rm -rf overmind.gz web-vault.tar.gz cloudflared.deb
-    
+
 # Copy files to docker
 COPY config/crontab .
 COPY config/Procfile .
@@ -79,10 +79,10 @@ ENV TINI_SUBREAPER yes \
 
 # Copy the entrypoint script into the image
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 # Set the entrypoint script as the entrypoint for the container
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
 
 # Start Overmind
 CMD ["overmind", "start"]
