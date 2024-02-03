@@ -1,0 +1,71 @@
+name: Check for New Releases DEV
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+
+jobs:
+  check-releases:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@master
+        with:
+            ref: dev
+
+      - name: Create File if Not Exist
+        run: |
+          if [ ! -f "all_releases.txt" ]; then
+            touch all_releases.txt
+            echo "File created"
+          fi
+
+      - name: Check for New Releases
+        id: check-releases
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+            REPOS="dani-garcia/vaultwarden dani-garcia/bw_web_builds cloudflare/cloudflared aptible/supercronic DarthSim/overmind"
+            RELEASES_FOUND=false # Assume no releases found initially
+            UPDATES_FILE="updates.log"
+
+            for REPO in $REPOS; do
+              LATEST_RELEASE=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" -H "Accept: application/vnd.github.v3+json")
+              if [[ $LATEST_RELEASE == *"message"* ]]; then
+                # Handle error
+                echo "Error checking releases for $REPO"
+                continue
+              fi
+              TAG_NAME=$(echo "$LATEST_RELEASE" | jq -r '.tag_name')
+              if [ -z "$TAG_NAME" ]; then
+                echo "No releases found for $REPO"
+              else
+                # Store the release tag in the GitHub environment variable
+                echo "RELEASE_${REPO^^}='$TAG_NAME'" >> $GITHUB_ENV
+                # Log the update to the temporary file
+                echo "Updated release for $REPO to $TAG_NAME" >> $UPDATES_FILE
+                RELEASES_FOUND=true # Releases were updated
+              fi
+            done
+
+            # Check if any releases were updated or added
+            if [ "$RELEASES_FOUND" = true ]; then
+              # Commit and push the updates file to the repository
+              git config --global user.email "you@example.com"
+              git config --global user.name "Your Name"
+              git add $UPDATES_FILE
+              git commit -m "Log updates to release versions: $(cat $UPDATES_FILE)"
+              git push
+
+              # Run the curl command to trigger another workflow
+              curl -X POST \
+                -H "Accept: application/vnd.github.v3+json" \
+                -H "Authorization: token $GITHUB_TOKEN" \
+                https://api.github.com/repos/MartinatorTime/vaultwarden/actions/workflows/deploy-fly.yml/dispatches \
+                -d '{"ref":"dev"}'
+            else
+              echo "No changes to commit or trigger the workflow"
+            fi
