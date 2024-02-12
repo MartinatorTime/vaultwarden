@@ -34,21 +34,16 @@ ENV ROCKET_PROFILE="release" \
     ADMIN_SESSION_LIFETIME=3 \
     DOMAIN=https://vault.martinatortime.us.to
 
-VOLUME /data
+VOLUME /
 
 # Install runtime dependencies
 RUN apt-get update && \
     apt-get install -y sqlite3 libpq5 wget curl tar lsof jq gpg ca-certificates openssl tmux procps fail2ban && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Backblaze B2 CLI
-RUN apt-get update && \
-    apt-get install -y curl gnupg2 && \
-    curl https://raw.githubusercontent.com/Backblaze/B2_Command_Line_Tool/master/install.sh | bash
-
 # Install Backblaze
-RUN wget https://f001.backblazeb2.com/file/b2-linux-x86_64 -O b2 && \
-    sudo mv b2 /usr/local/bin/ && \
+RUN wget https://github.com/Backblaze/B2_Command_Line_Tool/releases/latest/download/b2-linux -O b2 && \
+    mv b2 /usr/local/bin/ && \
     chmod +x /usr/local/bin/b2
 
 # Download and extract Overmind (latest release)
@@ -84,7 +79,8 @@ COPY config/crontab .
 COPY config/Procfile .
 
 COPY scripts/restore.sh /restore.sh
-COPY scripts/backup-r2.sh /backup-data.sh
+COPY scripts/backup-data-fly.sh /backup-github.sh
+COPY scripts/backup-r2.sh /backup-r2.sh
 
 # Copy Fail2ban config
 #COPY config/vaultwarden.local /etc/fail2ban/filter.d/vaultwarden.local
@@ -92,7 +88,8 @@ COPY scripts/backup-r2.sh /backup-data.sh
 
 # Chmod the scripts
 RUN chmod +x /restore.sh
-RUN chmod +x /backup-data.sh
+RUN chmod +x /backup-github.sh
+RUN chmod +x /backup-r2.sh
 
 # Set some envs
 ENV TINI_SUBREAPER yes \
@@ -101,7 +98,7 @@ ENV TINI_SUBREAPER yes \
 
 # Copy the entrypoint script into the image
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 # Set the entrypoint script as the entrypoint for the container
 ENTRYPOINT ["/entrypoint.sh"]
