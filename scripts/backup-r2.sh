@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/opt/b2env/bin/python
 
 sqlite3 /data/db.sqlite3 '.backup /data/db.bak'
 tar -czf /backup.tar.gz /data
