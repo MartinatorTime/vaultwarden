@@ -6,7 +6,7 @@ This project enables the automatic deployment of Vaultwarden (formerly known as 
 
 - **Auto-Deployment**: Vaultwarden is automatically deployed on the Fly.io platform, making it easy to run your own self-hosted password manager.
 
-- **Automatic Backups**: Backups of your Vaultwarden data and SQL are each day created and stored on GitHub Releases, ensuring the safety of your data.
+- **Automatic Backups**: Backups of your Vaultwarden data and SQL are each day created and stored on GitHub Releases and Backblaze R2 Bucket, ensuring the safety of your data.
 
 - **Auto delete old release files**: Github action automatic delete old release files older that set days.
 
@@ -51,7 +51,10 @@ This project relies on the following tools and libraries:
    - PASS (a passphrase used to encrypt and decrypt backup files)
    - PUSH_INSTALLATION_ID (for more information, refer to the Vaultwarden repository)
    - PUSH_INSTALLATION_KEY
-   - TOKEN (Github tokken to download file from repo releases and release to Github)
+   - TOKEN (Github token to download file from repo releases and release to Github)
+   - B2_APPLICATION_KEY_ID (Backblaze B2 Application Key ID)
+   - B2_APPLICATION_KEY (Backblaze B2 Application Key)
+   - B2_BUCKET (Backblaze B2 Bucket Name)
 
 6. Update 'scripts/restore.sh and backup-data-fly.sh' with your name/repo/tag.
 
