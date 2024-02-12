@@ -4,18 +4,19 @@ FROM vaultwarden/server:latest
 ENV ROCKET_PROFILE="release" \
     ROCKET_ADDRESS=0.0.0.0 \
     ROCKET_PORT=8080 \
+    ROCKET_WORKERS=50 \    
     SSL_CERT_DIR=/etc/ssl/certs \
     EMERGENCY_ACCESS_ALLOWED=true \
-    EXTENDED_LOGGING=false \
+    EXTENDED_LOGGING=true \
+    LOG_FILE=/data/vaultwarden.log \
+    LOG_LEVEL=info \
     ICON_SERVICE=google \
     IP_HEADER=X-Forwarded-For \
-    LOG_LEVEL=Info \
     ORG_CREATION_USERS=all \
     ORG_EVENTS_ENABLED=false \
     ORG_GROUPS_ENABLED=false \
     PUSH_ENABLED=true \
     RELOAD_TEMPLATES=false \
-    ROCKET_WORKERS=50 \
     SENDS_ALLOWED=true \
     SHOW_PASSWORD_HINT=false \
     SIGNUPS_ALLOWED=false \
@@ -24,19 +25,31 @@ ENV ROCKET_PROFILE="release" \
     WEBSOCKET_ENABLED=true \
     WEB_VAULT_ENABLED=true \
     DATABASE_MAX_CONNS=15 \
+    DB_CONNECTION_RETRIES=15 \
+    ICON_DOWNLOAD_TIMEOUT=20 \
+    ICON_BLACKLIST_NON_GLOBAL_IPS=true \
+    DISABLE_2FA_REMEMBER=true \
+    EMAIL_CHANGE_ALLOWED=true \
+    LOGIN_RATELIMIT_MAX_BURST=5 \
+    ADMIN_SESSION_LIFETIME=3 \
     DOMAIN=https://vault.martinatortime.us.to
 
 VOLUME /data
-USER root
 
 # Install runtime dependencies
 RUN apt-get update && \
-    apt-get install -y sqlite3 libpq5 wget curl tar lsof jq gpg ca-certificates openssl tmux procps fail2ban python3 python3-pip && \
+    apt-get install -y sqlite3 libpq5 wget curl tar lsof jq gpg ca-certificates openssl tmux procps fail2ban && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Backblaze B2 Python library
-RUN python3 -m venv /opt/b2env && \
-    /opt/b2env/bin/pip install b2
+# Install Backblaze B2 CLI
+RUN apt-get update && \
+    apt-get install -y curl gnupg2 && \
+    curl https://raw.githubusercontent.com/Backblaze/B2_Command_Line_Tool/master/install.sh | bash
+
+# Install Backblaze
+RUN wget https://f001.backblazeb2.com/file/b2-linux-x86_64 -O b2 && \
+    sudo mv b2 /usr/local/bin/ && \
+    chmod +x /usr/local/bin/b2
 
 # Download and extract Overmind (latest release)
 RUN OVERMIND_VERSION=$(curl -s https://api.github.com/repos/DarthSim/overmind/releases/latest | jq -r '.tag_name') \
@@ -65,13 +78,17 @@ RUN curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/r
 
 # Delete downloaded archives
 RUN rm -rf overmind.gz web-vault.tar.gz cloudflared.deb
-
+    
 # Copy files to docker
 COPY config/crontab .
 COPY config/Procfile .
 
 COPY scripts/restore.sh /restore.sh
 COPY scripts/backup-r2.sh /backup-data.sh
+
+# Copy Fail2ban config
+COPY config/vaultwarden.local /etc/fail2ban/filter.d/vaultwarden.local
+COPY config/vautvarden-jail.local /etc/fail2ban/jail.d/vautvarden.local
 
 # Chmod the scripts
 RUN chmod +x /restore.sh
@@ -84,10 +101,10 @@ ENV TINI_SUBREAPER yes \
 
 # Copy the entrypoint script into the image
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN chmod +x entrypoint.sh
 
 # Set the entrypoint script as the entrypoint for the container
-ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 
 # Start Overmind
 CMD ["overmind", "start"]
