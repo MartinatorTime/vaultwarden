@@ -30,13 +30,11 @@ VOLUME /data
 USER root
 # Install runtime dependencies
 RUN apt-get update && \
-    apt-get install -y sqlite3 libpq5 wget curl tar lsof jq gpg ca-certificates openssl tmux procps dos2unix && \
+    apt-get install -y sqlite3 libpq5 wget curl tar lsof jq gpg ca-certificates openssl tmux procps fail2ban python3 python3-pip && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Backblaze B2 CLI
-RUN apt-get update && \
-    apt-get install -y curl gnupg2 && \
-    curl https://raw.githubusercontent.com/Backblaze/B2_Command_Line_Tool/master/install.sh | bash
+# Install Backblaze B2 Python library
+RUN pip install b2
 
 # Download and extract Overmind (latest release)
 RUN OVERMIND_VERSION=$(curl -s https://api.github.com/repos/DarthSim/overmind/releases/latest | jq -r '.tag_name') \
