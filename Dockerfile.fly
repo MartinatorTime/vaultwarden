@@ -87,8 +87,8 @@ COPY scripts/restore.sh /restore.sh
 COPY scripts/backup-r2.sh /backup-data.sh
 
 # Copy Fail2ban config
-COPY config/vaultwarden.local /etc/fail2ban/filter.d/vaultwarden.local
-COPY config/vautvarden-jail.local /etc/fail2ban/jail.d/vautvarden.local
+#COPY config/vaultwarden.local /etc/fail2ban/filter.d/vaultwarden.local
+#COPY config/vautvarden-jail.local /etc/fail2ban/jail.d/vautvarden.local
 
 # Chmod the scripts
 RUN chmod +x /restore.sh
