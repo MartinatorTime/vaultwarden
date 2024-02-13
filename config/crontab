@@ -1,2 +1,2 @@
-0 0 * * * /backup-r2.sh
+5 0 * * * /backup-r2.sh
 0 0 * * * /backup-github.sh
