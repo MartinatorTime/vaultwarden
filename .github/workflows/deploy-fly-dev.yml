@@ -56,6 +56,9 @@ jobs:
           flyctl secrets set B2_APPLICATION_KEY_ID="${{ secrets.B2_APPLICATION_KEY_ID }}" --stage
           flyctl secrets set B2_APPLICATION_KEY="${{ secrets.B2_APPLICATION_KEY }}" --stage       
           flyctl secrets set B2_BUCKET="${{ secrets.B2_BUCKET }}" --stage
+          flyctl secrets set SMTP_USERNAME="${{ secrets.SMTP_USERNAME }}" --stage
+          flyctl secrets set SMTP_FROM="${{ secrets.SMTP_USERNAME }}" --stage
+          flyctl secrets set SMTP_PASSWORD="${{ secrets.SMTP_PASSWORD }}" --stage
         env:
           FLY_APP: ${{ secrets.FLY_APP }}
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

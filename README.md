@@ -55,6 +55,12 @@ This project relies on the following tools and libraries:
    - B2_APPLICATION_KEY_ID (Backblaze B2 Application Key ID)
    - B2_APPLICATION_KEY (Backblaze B2 Application Key)
    - B2_BUCKET (Backblaze B2 Bucket Name)
+   - SMTP_HOST (The hostname of your SMTP server. For example, if you are using Gmail, this would be `smtp.gmail.com`)
+   - SMTP_PORT (The port number to use when connecting to the SMTP server. Common ports include `465` for SSL/TLS connections and `587` for STARTTLS connections)
+   - SMTP_SECURITY (The security protocol to use when connecting to the SMTP server. Set this to `force_tls` to force TLS encryption)
+   - SMTP_USERNAME (Your username/gmail for the SMTP service)
+   - SMTP_PASSWORD (Your password for the SMTP service)
+
 
 6. Update 'scripts/restore.sh and backup-data-fly.sh' with your name/repo/tag.
 

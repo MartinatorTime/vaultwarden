@@ -4,7 +4,7 @@ FROM vaultwarden/server:latest
 ENV ROCKET_PROFILE="release" \
     ROCKET_ADDRESS=0.0.0.0 \
     ROCKET_PORT=8080 \
-    ROCKET_WORKERS=50 \    
+    ROCKET_WORKERS=80 \    
     SSL_CERT_DIR=/etc/ssl/certs \
     EMERGENCY_ACCESS_ALLOWED=true \
     EXTENDED_LOGGING=true \
@@ -18,9 +18,9 @@ ENV ROCKET_PROFILE="release" \
     PUSH_ENABLED=true \
     RELOAD_TEMPLATES=false \
     SENDS_ALLOWED=true \
-    SHOW_PASSWORD_HINT=false \
-    SIGNUPS_ALLOWED=false \
-    SIGNUPS_VERIFY=false \
+    SHOW_PASSWORD_HINT=true \
+    SIGNUPS_ALLOWED=true \
+    SIGNUPS_VERIFY=true \
     USE_SYSLOG=false \
     WEBSOCKET_ENABLED=true \
     WEB_VAULT_ENABLED=true \
@@ -28,11 +28,20 @@ ENV ROCKET_PROFILE="release" \
     DB_CONNECTION_RETRIES=15 \
     ICON_DOWNLOAD_TIMEOUT=20 \
     ICON_BLACKLIST_NON_GLOBAL_IPS=true \
-    DISABLE_2FA_REMEMBER=true \
     EMAIL_CHANGE_ALLOWED=true \
+    EMAIL_ATTEMPTS_LIMIT=3 \
+    EMAIL_TOKEN_SIZE=12 \
+    PASSWORD_HINTS_ALLOWED=true \
     LOGIN_RATELIMIT_MAX_BURST=5 \
+    LOGIN_RATELIMIT_SECONDS=120 \
+    LOGIN_RATELIMIT_MAX_BURST=3 \
     ADMIN_SESSION_LIFETIME=3 \
-    DOMAIN=https://vault.martinatortime.us.to
+    DOMAIN=https://vault.martinatortime.us.to \
+    SMTP_HOST=smtp.gmail.com \
+    SMTP_PORT=465 \
+    SMTP_SECURITY=force_tls \
+    SMTP_EMBED_IMAGES=true \
+    REQUIRE_DEVICE_EMAIL=true
 
 VOLUME /
 
