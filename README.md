@@ -2,13 +2,14 @@
 
 This project enables the automatic deployment of Vaultwarden (formerly known as Bitwarden_RS) on the Fly.io platform. It also includes features like automatic backups to GitHub Releases and secure access via Cloudflare Tunnel.
 
+
 ## Features
 
 - **Auto-Deployment**: Vaultwarden is automatically deployed on the Fly.io platform, making it easy to run your own self-hosted password manager.
 
 - **Automatic Backups**: Backups of your Vaultwarden data and SQL are each day created and stored on GitHub Releases and Backblaze R2 Bucket, ensuring the safety of your data.
 
-- **Auto delete old release files**: Github action automatic delete old release files older that set days.
+- **Auto delete old release files**: Github action automatically deletes old release files older than set days.
 
 - **Cloudflare Tunnel**: Cloudflare Tunnel is used to provide secure and encrypted access to your Vaultwarden instance.
 
@@ -16,6 +17,8 @@ This project enables the automatic deployment of Vaultwarden (formerly known as 
   - Vaultwarden Web Vault
   - Overmind
   - Supercron
+
+- **Caddy Server**: Caddy is used as a reverse proxy and web server to serve your Vaultwarden instance. It simplifies the deployment process by handling HTTPS and other web server tasks, making your setup more efficient and secure.
 
 ## Dependencies
 
@@ -32,6 +35,8 @@ This project relies on the following tools and libraries:
 - [Supercron](https://github.com/aptible/supercronic): A crontab-compatible job runner for running scheduled tasks.
 
 - [Overmind](https://github.com/DarthSim/overmind): A process manager for Procfile-based applications.
+
+- [Caddy](https://caddyserver.com/): A powerful, enterprise-ready, open-source web server with automatic HTTPS written in Go.
 
 ## Getting Started
 
@@ -87,6 +92,8 @@ Special thanks to the creators and maintainers of the tools and libraries that m
 - [Supercron](https://github.com/aptible/supercronic) for scheduled tasks.
 
 - [Overmind](https://github.com/DarthSim/overmind) for process management.
+
+- [Caddy](https://caddyserver.com/) for serving as a powerful, enterprise-ready, open-source web server with automatic HTTPS.
 
 ## License
 
