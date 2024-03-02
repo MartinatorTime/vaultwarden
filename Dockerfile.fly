@@ -90,6 +90,7 @@ COPY config/Procfile /Procfile
 COPY scripts/restore.sh /restore.sh
 COPY scripts/backup-data-fly.sh /backup-github.sh
 COPY scripts/backup-r2.sh /backup-r2.sh
+COPY scripts/backup-rclone.sh /backup-rclone.sh
 COPY config/Caddyfile /etc/caddy/Caddyfile
 COPY entrypoint.sh /entrypoint.sh
 
