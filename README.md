@@ -65,6 +65,9 @@ This project relies on the following tools and libraries:
    - SMTP_SECURITY (The security protocol to use when connecting to the SMTP server. Set this to `force_tls` to force TLS encryption)
    - SMTP_USERNAME (Your username/gmail for the SMTP service)
    - SMTP_PASSWORD (Your password for the SMTP service)
+   - CF_ACCESS_KEY (Cloudflare R2 Access Key ID)
+   - CF_ACCESS_KEY_SECRET (Cloudflare R2 Access Key Secret)
+   - CF_R2_ENDPOINT (Cloudflare R2 Endpoint)
 
 
 6. Update 'scripts/restore.sh and backup-data-fly.sh' with your name/repo/tag.

@@ -59,6 +59,9 @@ jobs:
           flyctl secrets set SMTP_USERNAME="${{ secrets.SMTP_USERNAME }}" --stage
           flyctl secrets set SMTP_FROM="${{ secrets.SMTP_USERNAME }}" --stage
           flyctl secrets set SMTP_PASSWORD="${{ secrets.SMTP_PASSWORD }}" --stage
+          flyctl secrets set CF_ACCESS_KEY="${{ secrets.CF_ACCESS_KEY }}" --stage
+          flyctl secrets set CF_ACCESS_KEY_SECRET="${{ secrets.CF_ACCESS_KEY_SECRET }}" --stage
+          flyctl secrets set CF_R2_ENDPOINT="${{ secrets.CF_R2_ENDPOINT }}" --stage
         env:
           FLY_APP: ${{ secrets.FLY_APP }}
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

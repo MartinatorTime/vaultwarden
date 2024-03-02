@@ -45,7 +45,7 @@ ENV ROCKET_PROFILE="release" \
 VOLUME /
 # Install runtime dependencies
 RUN apt-get update \
-    && apt-get install -y sqlite3 libnss3-tools libpq5 wget curl tar lsof jq gpg ca-certificates openssl tmux procps \
+    && apt-get install -y sqlite3 libnss3-tools libpq5 wget curl tar lsof jq gpg ca-certificates openssl tmux procps rclone \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Backblaze (latest release)
@@ -82,7 +82,7 @@ RUN curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/r
     && dpkg -i cloudflared.deb
 
 # Delete downloaded archives
-RUN rm -rf overmind.gz web-vault.tar.gz cloudflared.deb
+RUN rm -rf overmind.gz web-vault.tar.gz cloudflared.deb caddy.tar.gz
     
 # Copy files to docker
 COPY config/crontab /crontab
@@ -97,6 +97,7 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /restore.sh
 RUN chmod +x /backup-github.sh
 RUN chmod +x /backup-r2.sh
+RUN chmod +x /backup-rclone.sh
 RUN chmod +x /entrypoint.sh
 
 # Set the entrypoint script as the entrypoint for the container
