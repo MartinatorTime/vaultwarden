@@ -29,5 +29,5 @@ curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
     --data-binary "@/backup.tar.gz.gpg" \
     "https://uploads.github.com/repos/$GITHUB_USER/$REPO_NAME/releases/$RELEASE_ID/assets?name=backup-$(date +'%d_%m_%Y-%H_%M').tar.gz.gpg"
 
-rm *.tar.gz.gpg
-rm *.tar.gz
+rm ./*.tar.gz.gpg
+rm ./*.tar.gz

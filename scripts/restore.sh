@@ -33,9 +33,9 @@ for TAG in $TAGS; do
 done
 
 # curl does not allow overwriting file from -O, nuke
-rm *.tar.gz.gpg
-rm *.tar.gz
-rm -rf /data
+rm ./*.tar.gz.gpg
+rm ./*.tar.gz
+rm -rf ./data
 
 # curl:
 # -O: Use name provided from endpoint
@@ -45,10 +45,10 @@ rm -rf /data
 curl -O -J -L -H "Accept: application/octet-stream" "$API_URL/releases/assets/$ASSET_ID"
 
 # Decrypt the backup file
-echo "$PASS" | gpg --batch --yes --passphrase-fd 0 -o backup.tar.gz -d *.tar.gz.gpg
+echo ""$PASS" | gpg --batch --yes --passphrase-fd 0 -o backup.tar.gz -d *.tar.gz.gpg"
 
 # Extract the tar file
 tar -xzf backup.tar.gz -C /
 
-rm *.tar.gz.gpg
-rm *.tar.gz
+rm ./*.tar.gz.gpg
+rm ./*.tar.gz
