@@ -1,0 +1,35 @@
+name: PostgreSQL Restore From Repo
+
+on:
+  workflow_dispatch:
+    inputs:
+      filename:
+        description: 'Backup file name'
+        required: true
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+
+      - name: Add PostgreSQL repository
+        run: |
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt-get update
+
+      - name: Install PostgreSQL client 16
+        run: |
+          sudo apt-get install postgresql-client-16 > /dev/null 2>&1
+          
+      - name: Decrypt SQL file
+        run: |
+          echo "${{ secrets.PASS }}" | gpg --batch --yes --passphrase-fd 0 --decrypt-files ${{ github.workspace }}/backup/SQL/${{ github.event.inputs.filename }}
+          rm ${{ github.workspace }}/backup/SQL/*.sql.gpg
+          
+      - name: Restore SQL file
+        run: |
+          /usr/lib/postgresql/16/bin/pg_restore -c -d ${{ secrets.DATABASE }} ${{ github.workspace }}/backup/SQL/*.sql

@@ -1,0 +1,24 @@
+name: Delete Deployments
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  delete-deployments:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: Delete Deployments
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Fetch the list of deployments
+          deployments=$(curl -H "Authorization: token $GITHUB_TOKEN" -s "https://api.github.com/repos/${GITHUB_REPOSITORY}/deployments")
+          
+          # Loop through and delete each deployment
+          for deployment_id in $(echo "$deployments" | jq -r '.[].id'); do
+            curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/${GITHUB_REPOSITORY}/deployments/$deployment_id"
+          done

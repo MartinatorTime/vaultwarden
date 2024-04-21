@@ -1,0 +1,37 @@
+name: Delete Older that 7Days Release Files
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '5 0 * * *'
+
+jobs:
+  delete_files:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Delete old release files
+      run: |
+        # Get the current date in UTC and calculate the date 7 days ago
+        CURRENT_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        DAYS_AGO=$(date -u -d "$CURRENT_DATE - 7 days" +"%Y-%m-%dT%H:%M:%SZ")
+
+        # Use GitHub's REST API to list releases
+        RELEASES=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases")
+
+        # Loop through releases and delete files older than DAYS_AGO
+        for RELEASE_ID in $(echo "$RELEASES" | jq -r '.[].id'); do
+          ASSETS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets")
+          for ASSET_ID in $(echo "$ASSETS" | jq -r '.[].id'); do
+            ASSET_UPLOAD_DATE=$(echo "$ASSETS" | jq -r ".[] | select(.id == $ASSET_ID) | .updated_at")
+            if [[ "$ASSET_UPLOAD_DATE" < "$DAYS_AGO" ]]; then
+              echo "Deleting asset $ASSET_ID from release $RELEASE_ID..."
+              curl -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/assets/$ASSET_ID"
+            fi
+          done
+        done
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

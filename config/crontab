@@ -1,0 +1,3 @@
+1 0 * * * /backup-r2-backblaze.sh
+3 0 * * * /backup-rclone-cloudflare.sh
+5 0 * * * /backup-data-github.sh

@@ -1,0 +1,8 @@
+primary_region = "arn"
+
+[build]
+  dockerfile = "Dockerfile.fly"
+
+[[mounts]]
+  source = "vw_data"
+  destination = "/data"
