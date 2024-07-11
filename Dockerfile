@@ -45,6 +45,7 @@ ENV ROCKET_PROFILE="release" \
     REQUIRE_DEVICE_EMAIL=true \
     TZ=Europe/Riga \
     F2B_DB_PURGE_AGE=30d \
+    F2B_LOG_TARGET=/data/vaultwarden.log \
     F2B_LOG_LEVEL=INFO \
     F2B_IPTABLES_CHAIN=INPUT
 
@@ -103,10 +104,11 @@ COPY config/Caddyfile /etc/caddy/Caddyfile
 COPY entrypoint.sh /entrypoint.sh
 
 # Copy fail2ban configs
-COPY fail2ban/filter.d/vaultwarden.local /etc/fail2ban/filter.d/vaultwarden.local
-COPY fail2ban/jail.d/vaultwarden.local /etc/fail2ban/jail.d/vaultwarden.local
+COPY fail2ban/filter.d/vaultwarden_login_bruteforce.conf /etc/fail2ban/filter.d/vaultwarden_login_bruteforce.conf
+COPY fail2ban/jail.d/jail.local /etc/fail2ban/jail.d/jail.local
 COPY fail2ban/jail.d/defaults-debian.conf /etc/fail2ban/jail.d/defaults-debian.conf
-COPY fail2ban/action.d/iptables.local /etc/fail2ban/action.d/iptables.local
+COPY fail2ban/action.d/action-ban-cloudflare.conf /etc/fail2ban/action.d/action-ban-cloudflare.conf
+COPY fail2ban/action.d/action-ban-docker-vaultwarden-bruteforce.conf /etc/fail2ban/action.d/action-ban-docker-vaultwarden-bruteforce.conf
 
 # Chmod the scripts
 RUN chmod +x /backup-r2-backblaze.sh
