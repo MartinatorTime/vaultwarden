@@ -47,7 +47,7 @@ ENV ROCKET_PROFILE="release" \
 VOLUME /
 # Install runtime dependencies
 RUN apt-get update \
-    && apt-get install -y sqlite3 libnss3-tools libpq5 wget curl tar lsof jq gpg ca-certificates openssl tmux procps rclone \
+    && apt-get install -y sqlite3 libnss3-tools libpq5 wget curl tar lsof jq gpg ca-certificates openssl tmux procps rclone fail2ban \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the timezone to Riga at runtime
@@ -97,6 +97,10 @@ COPY scripts/backup-data-github.sh /backup-data-github.sh
 COPY scripts/restore-data-github.sh /restore-data-github.sh
 COPY config/Caddyfile /etc/caddy/Caddyfile
 COPY entrypoint.sh /entrypoint.sh
+
+# Copy fail2ban configs
+COPY fail2ban/filter.d/vaultwarden.local /etc/fail2ban/filter.d/vaultwarden.local
+COPY fail2ban/filter.d/vaultwarden.local /etc/fail2ban/jail.d/vaultwarden.local
 
 # Chmod the scripts
 RUN chmod +x /backup-r2-backblaze.sh
