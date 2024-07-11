@@ -4,16 +4,13 @@
 # Requires: oauth token, https://help.github.com/articles/creating-an-access-token-for-command-line-use/
 # Requires: jq package to parse json
 
-# Your oauth token goes here, see link above
-# Repo owner (user id)
-OWNER="MartinatorTime"
 # Repo name
 REPO="vaultwarden"
 # The file name expected to download. This is deleted before curl pulls down a new one
 FILE_NAME="$1"
 
 # Concatenate the values together for a 
-API_URL="https://$GITHUB_TOKEN:@api.github.com/repos/$OWNER/$REPO"
+API_URL="https://$GITHUB_TOKEN:@api.github.com/repos/$USERNAME/$REPO"
 
 # Gets info on latest release, gets first uploaded asset id of a release,
 # More info on jq being used to parse json: https://stedolan.github.io/jq/tutorial/
