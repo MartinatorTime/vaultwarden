@@ -42,7 +42,12 @@ ENV ROCKET_PROFILE="release" \
     SMTP_HOST=${SMTP_HOST} \
     SMTP_PORT=465 \
     SMTP_SECURITY=force_tls \
-    REQUIRE_DEVICE_EMAIL=true
+    REQUIRE_DEVICE_EMAIL=true \
+    TZ=Europe/Riga \
+    F2B_DB_PURGE_AGE=30d \
+    F2B_LOG_TARGET=/data/fail2ban.log \
+    F2B_LOG_LEVEL=INFO \
+    F2B_IPTABLES_CHAIN=INPUT
 
 VOLUME /
 # Install runtime dependencies
@@ -100,7 +105,8 @@ COPY entrypoint.sh /entrypoint.sh
 
 # Copy fail2ban configs
 COPY fail2ban/filter.d/vaultwarden.local /etc/fail2ban/filter.d/vaultwarden.local
-COPY fail2ban/filter.d/vaultwarden.local /etc/fail2ban/jail.d/vaultwarden.local
+COPY fail2ban/jail.d/vaultwarden.local /etc/fail2ban/jail.d/vaultwarden.local
+COPY fail2ban/action.d/iptables.local /etc/fail2ban/action.d/iptables.local
 
 # Chmod the scripts
 RUN chmod +x /backup-r2-backblaze.sh

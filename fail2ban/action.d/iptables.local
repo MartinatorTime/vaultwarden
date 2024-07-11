@@ -1,0 +1,6 @@
+# /etc/fail2ban/action.d/iptables.local
+
+[Init]
+blocktype = DROP
+[Init?family=inet6]
+blocktype = DROP
