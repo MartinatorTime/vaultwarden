@@ -45,7 +45,7 @@ ENV ROCKET_PROFILE="release" \
     REQUIRE_DEVICE_EMAIL=true \
     TZ=Europe/Riga \
     F2B_DB_PURGE_AGE=30d \
-    F2B_LOG_TARGET=/data/fail2ban.log \
+    F2B_LOG_TARGET=/data/vaultwarden.log \
     F2B_LOG_LEVEL=INFO \
     F2B_IPTABLES_CHAIN=INPUT
 
