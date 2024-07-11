@@ -46,13 +46,12 @@ ENV ROCKET_PROFILE="release" \
     TZ=Europe/Riga \
     F2B_DB_PURGE_AGE=30d \
     F2B_LOG_TARGET=/data/vaultwarden.log \
-    F2B_LOG_LEVEL=INFO \
-    F2B_IPTABLES_CHAIN=INPUT
+    F2B_LOG_LEVEL=INFO
 
 VOLUME /
 # Install runtime dependencies
 RUN apt-get update \
-    && apt-get install -y sqlite3 libnss3-tools libpq5 wget curl tar lsof jq gpg ca-certificates openssl tmux procps rclone fail2ban \
+    && apt-get install -y sqlite3 libnss3-tools libpq5 wget curl tar lsof jq gpg ca-certificates openssl tmux procps rclone fail2ban iptables \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the timezone to Riga at runtime
