@@ -106,6 +106,7 @@ COPY entrypoint.sh /entrypoint.sh
 # Copy fail2ban configs
 COPY fail2ban/filter.d/vaultwarden.local /etc/fail2ban/filter.d/vaultwarden.local
 COPY fail2ban/jail.d/vaultwarden.local /etc/fail2ban/jail.d/vaultwarden.local
+COPY fail2ban/jail.d/defaults-debian.conf /etc/fail2ban/jail.d/defaults-debian.conf
 COPY fail2ban/action.d/iptables.local /etc/fail2ban/action.d/iptables.local
 
 # Chmod the scripts
