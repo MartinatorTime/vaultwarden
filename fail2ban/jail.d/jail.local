@@ -18,7 +18,7 @@ filter = vaultwarden_login_bruteforce
 logpath = /data/vaultwarden.log
 # this action bans every IP via DOCKER-USER chain. So the IP won't be able to access docker containers!
 # Note: This only works for containers that don't use the dockernet MACVLAN interface
-chain = DOCKER-USER
+chain = FORWARD
 banaction = action-ban-docker-vaultwarden-bruteforce
 			action-ban-cloudflare 
 # after three failed login attempts
