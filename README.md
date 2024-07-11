@@ -56,6 +56,7 @@ This project relies on the following tools and libraries:
    - DATABASE (URL of the database)
    - FLY_API_TOKEN
    - FLY_APP (Fly.io App name)
+   - USERNAME (Your Github username for backups to releases)
    - PASS (a passphrase used to encrypt and decrypt backup files)
    - PUSH_INSTALLATION_ID (for more information, refer to the Vaultwarden repository)
    - PUSH_INSTALLATION_KEY
@@ -67,6 +68,7 @@ This project relies on the following tools and libraries:
    - SMTP_SECURITY (The security protocol to use when connecting to the SMTP server. Set this to `force_tls` to force TLS encryption)
    - SMTP_USERNAME (Your username/gmail for the SMTP service)
    - SMTP_PASSWORD (Your password for the SMTP service)
+   - SMTP_HOST (Your hostname for SMTP service)
    - CF_ACCESS_KEY (Cloudflare R2 Access Key ID)
    - CF_ACCESS_KEY_SECRET (Cloudflare R2 Access Key Secret)
    - CF_R2_ENDPOINT (Cloudflare R2 Endpoint)

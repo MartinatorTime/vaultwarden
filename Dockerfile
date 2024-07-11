@@ -6,7 +6,7 @@ ARG DOMAIN
 ENV ROCKET_PROFILE="release" \
     ROCKET_ADDRESS=0.0.0.0 \
     ROCKET_PORT=8080 \
-    ROCKET_WORKERS=50 \    
+    ROCKET_WORKERS=30 \    
     SSL_CERT_DIR=/etc/ssl/certs \
     EMERGENCY_ACCESS_ALLOWED=true \
     EXTENDED_LOGGING=true \
@@ -39,7 +39,7 @@ ENV ROCKET_PROFILE="release" \
     ADMIN_SESSION_LIFETIME=3 \
     DOMAIN=https://${DOMAIN} \
     DOMAIN_NAME=${DOMAIN} \
-    SMTP_HOST=smtp.gmail.com \
+    SMTP_HOST=${SMTP_HOST} \
     SMTP_PORT=465 \
     SMTP_SECURITY=force_tls \
     REQUIRE_DEVICE_EMAIL=true
