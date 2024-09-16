@@ -46,9 +46,23 @@ ENV ROCKET_PROFILE="release" \
 
 VOLUME /
 # Install runtime dependencies
-RUN apt-get update \
-    && apt-get install -y sqlite3 libnss3-tools libpq5 wget curl tar lsof jq gpg ca-certificates openssl tmux procps rclone \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    sqlite3 \
+    libnss3-tools \
+    libpq5 \
+    wget \
+    curl \
+    tar \
+    lsof \
+    jq \
+    gpg \
+    ca-certificates \
+    openssl \
+    tmux \
+    procps \
+    rclone && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set the timezone to Riga at runtime
 RUN ln -snf /usr/share/zoneinfo/Europe/Riga /etc/localtime && echo Europe/Riga > /etc/timezone
