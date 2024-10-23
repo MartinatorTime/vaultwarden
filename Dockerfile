@@ -96,9 +96,35 @@ RUN CADDY_VERSION=$(curl -s https://api.github.com/repos/caddyserver/caddy/relea
     && tar -xzf caddy.tar.gz -C /usr/local/bin/ caddy
 
 # Install cloudflared tunnel (latest release)
-RUN curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb \
-    && dpkg -i cloudflared.deb
-
+RUN curl -s "https://api.github.com/repos/cloudflare/cloudflared/releases/latest" | \
+    jq -r '.assets[] | select(.name == "cloudflared-linux-amd64.deb") | .browser_download_url' > download_url.txt && \
+    if [[ $? -ne 0 ]]; then \
+        echo "Failed to find 'cloudflared-linux-amd64.deb' in the latest release. Trying previous release"; \
+        curl -s "https://api.github.com/repos/cloudflare/cloudflared/releases" | \
+        jq -r '.[] | .tag_name' | \
+        sort -r | \
+        head -n 2 | \
+        tail -n 1 > previous_release.txt && \
+        PREVIOUS_RELEASE=$(cat previous_release.txt) && \
+        curl -s "https://api.github.com/repos/cloudflare/cloudflared/releases/tags/$PREVIOUS_RELEASE" | \
+        jq -r '.assets[] | select(.name == "cloudflared-linux-amd64.deb") | .browser_download_url' > download_url.txt; \
+        if [[ $? -ne 0 ]]; then \
+            echo "Failed to find 'cloudflared-linux-amd64.deb' in any release. Please check the release structure."; \
+            exit 1; \
+        fi; \
+    fi && \
+    curl -L --output cloudflared.deb $(cat download_url.txt) && \
+    if [[ $? -ne 0 ]]; then \
+        echo "Failed to download Cloudflared release. Please check the release tag and retry."; \
+        exit 1; \
+    fi && \
+    dpkg -i cloudflared.deb && \
+    rm download_url.txt previous_release.txt && \
+    if [[ $? -ne 0 ]]; then \
+        echo "Failed to install Cloudflared. Please check the downloaded package and retry."; \
+        exit 1; \
+    fi
+    
 # Delete downloaded archives
 RUN rm -rf overmind.gz web-vault.tar.gz cloudflared.deb caddy.tar.gz
     
