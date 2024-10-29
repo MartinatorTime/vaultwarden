@@ -6,7 +6,7 @@ ARG DOMAIN
 ENV ROCKET_PROFILE="release" \
     ROCKET_ADDRESS=0.0.0.0 \
     ROCKET_PORT=8080 \
-    ROCKET_WORKERS=5 \    
+    ROCKET_WORKERS=20 \    
     SSL_CERT_DIR=/etc/ssl/certs \
     EMERGENCY_ACCESS_ALLOWED=true \
     EXTENDED_LOGGING=true \
@@ -68,9 +68,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN ln -snf /usr/share/zoneinfo/Europe/Riga /etc/localtime && echo Europe/Riga > /etc/timezone
 
 # Install Backblaze (latest release)
-RUN wget https://github.com/Backblaze/B2_Command_Line_Tool/releases/latest/download/b2-linux -O b2 \
-    && mv b2 /usr/local/bin/ \
-    && chmod +x /usr/local/bin/b2
+#RUN wget https://github.com/Backblaze/B2_Command_Line_Tool/releases/latest/download/b2-linux -O b2 \
+#    && mv b2 /usr/local/bin/ \
+#    && chmod +x /usr/local/bin/b2
 
 # Download and extract Overmind (latest release)
 RUN OVERMIND_VERSION=$(curl -s https://api.github.com/repos/DarthSim/overmind/releases/latest | jq -r '.tag_name') \
@@ -91,9 +91,9 @@ RUN VAULT_VERSION=$(curl -s https://api.github.com/repos/dani-garcia/bw_web_buil
     && tar -xzf web-vault.tar.gz -C /
 
 # Download and extract Caddy (latest release)
-RUN CADDY_VERSION=$(curl -s https://api.github.com/repos/caddyserver/caddy/releases/latest | jq -r '.tag_name') \
-    && wget -O caddy.tar.gz "https://github.com/caddyserver/caddy/releases/download/$CADDY_VERSION/caddy_${CADDY_VERSION#v}_linux_amd64.tar.gz" \
-    && tar -xzf caddy.tar.gz -C /usr/local/bin/ caddy
+#RUN CADDY_VERSION=$(curl -s https://api.github.com/repos/caddyserver/caddy/releases/latest | jq -r '.tag_name') \
+#    && wget -O caddy.tar.gz "https://github.com/caddyserver/caddy/releases/download/$CADDY_VERSION/caddy_${CADDY_VERSION#v}_linux_amd64.tar.gz" \
+#    && tar -xzf caddy.tar.gz -C /usr/local/bin/ caddy
 
 # Install cloudflared tunnel (2024.10.0)
 RUN curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/download/2024.10.0/cloudflared-linux-amd64.deb \
@@ -105,15 +105,15 @@ RUN rm -rf overmind.gz web-vault.tar.gz cloudflared.deb caddy.tar.gz
 # Copy files to docker
 COPY config/crontab /crontab
 COPY config/Procfile /Procfile
-COPY scripts/backup-r2-backblaze.sh /backup-r2-backblaze.sh
+#COPY scripts/backup-r2-backblaze.sh /backup-r2-backblaze.sh
 COPY scripts/backup-rclone-cloudflare.sh /backup-rclone-cloudflare.sh
 COPY scripts/backup-data-github.sh /backup-data-github.sh
 COPY scripts/restore-data-github.sh /restore-data-github.sh
-COPY config/Caddyfile /etc/caddy/Caddyfile
+#COPY config/Caddyfile /etc/caddy/Caddyfile
 COPY entrypoint.sh /entrypoint.sh
 
 # Chmod the scripts
-RUN chmod +x /backup-r2-backblaze.sh
+#RUN chmod +x /backup-r2-backblaze.sh
 RUN chmod +x /backup-rclone-cloudflare.sh
 RUN chmod +x /backup-data-github.sh
 RUN chmod +x /restore-data-github.sh
