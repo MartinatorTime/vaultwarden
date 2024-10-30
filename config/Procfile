@@ -1,4 +1,0 @@
-vaultwarden: /start.sh
-#caddy: caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
-backup: supercronic /crontab
-cf_tunnel: cloudflared tunnel --no-autoupdate run --protocol http2 --token "$CF_TOKEN"

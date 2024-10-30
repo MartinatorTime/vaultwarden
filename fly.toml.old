@@ -1,8 +1,0 @@
-primary_region = "arn"
-
-[build]
-  dockerfile = "Dockerfile"
-
-[[mounts]]
-  source = "vw_data"
-  destination = "/data"

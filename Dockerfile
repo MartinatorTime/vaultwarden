@@ -1,11 +1,16 @@
 FROM vaultwarden/server:latest
 
-ARG INSTALL_OVERMIND=true
+# You can choose what to install with vaultwarden
 ARG INSTALL_SUPERCRONIC=true
 ARG INSTALL_CADDY=fasle
 ARG INSTALL_B2=false
 ARG INSTALL_CLOUDFLARED=true
 ARG INSTALL_WEB_VAULT=true
+
+# Set up timezone
+ARG TIMEZONE=Europe/Riga
+
+# Set up environment variables
 ARG DOMAIN
 ARG SMTP_HOST
 ARG SMTP_PORT
@@ -53,15 +58,16 @@ ENV ROCKET_PROFILE=release \
     SMTP_SECURITY=${SMTP_SECURITY} \
     REQUIRE_DEVICE_EMAIL=true
 
+# Install dependencies and set timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
     sqlite3 libnss3-tools libpq5 wget curl tar lsof jq gpg \
     ca-certificates openssl tmux procps rclone \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && ln -snf /usr/share/zoneinfo/Europe/Riga /etc/localtime \
-    && echo Europe/Riga > /etc/timezone
+    && ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
+    && echo ${TIMEZONE} > /etc/timezone
 
-# Create Procfile
+# Create Procfile for overmind
 RUN echo "vaultwarden: /start.sh" > /Procfile
 
 # Optimized installation of tools with error handling
@@ -73,15 +79,15 @@ RUN set -ex; \
     CLOUDFLARED_VERSION="2024.10.0"; \
     B2_VERSION=$(curl -s "https://api.github.com/repos/Backblaze/B2_Command_Line_Tool/releases/latest" | jq -r '.tag_name'); \
     \
-    if [ "$INSTALL_OVERMIND" = "true" ]; then \
-        curl -L -o overmind.gz "https://github.com/DarthSim/overmind/releases/download/$OVERMIND_VERSION/overmind-${OVERMIND_VERSION}-linux-amd64.gz" || exit 1; \
-        gunzip overmind.gz && chmod +x overmind && mv overmind /usr/local/bin/; \
-    fi; \
+    curl -L -o overmind.gz "https://github.com/DarthSim/overmind/releases/download/$OVERMIND_VERSION/overmind-${OVERMIND_VERSION}-linux-amd64.gz" || exit 1; \
+    gunzip overmind.gz && chmod +x overmind && mv overmind /usr/local/bin/; \
     \
-    if [ "$ISNTALL_SUPERCRONIC" = "true" ]; then \
+    if [ "$INSTALL_SUPERCRONIC" = "true" ]; then \
         curl -L -o /usr/local/bin/supercronic "https://github.com/aptible/supercronic/releases/download/${SUPERCRONIC_VERSION}/supercronic-linux-amd64" || exit 1; \
         chmod +x /usr/local/bin/supercronic; \
         echo "backup: supercronic /crontab" >> /Procfile; \
+        echo "1 0 * * * /backup-data-github.sh" > /crontab; \
+        echo "5 0 * * * /backup-rclone-cloudflare.sh" >> /crontab; \
     fi; \
     \
     if [ "$INSTALL_WEB_VAULT" = "true" ]; then \
@@ -92,7 +98,7 @@ RUN set -ex; \
     if [ "$INSTALL_CLOUDFLARED" = "true" ]; then \
         curl -L -o cloudflared.deb "https://github.com/cloudflare/cloudflared/releases/download/$CLOUDFLARED_VERSION/cloudflared-linux-amd64.deb" || exit 1; \
         dpkg -i cloudflared.deb; \
-        echo "cf_tunnel: cloudflared tunnel --no-autoupdate run --protocol quic --token "$CF_TOKEN"" >> /Procfile; \
+        echo "cf_tunnel: /start_cloudflared.sh" >> /Procfile; \
     fi; \
     \
     if [ "$INSTALL_CADDY" = "true" ]; then \
@@ -104,16 +110,16 @@ RUN set -ex; \
     if [ "$INSTALL_B2" = "true" ]; then \
         curl -L -o /usr/local/bin/b2 "https://github.com/Backblaze/B2_Command_Line_Tool/releases/download/$B2_VERSION/b2-linux" || exit 1; \
         chmod +x /usr/local/bin/b2; \
+        echo "3 0 * * * /backup-r2-backblaze.sh" >> /crontab; \
     fi
 
+# Copy files to docker
+COPY scripts/*.sh /
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY entrypoint.sh /entrypoint.sh
 
-# Copy files with correct permissions (use a single COPY if your Docker version supports it)
-COPY --chmod=755 config/crontab /crontab
-COPY --chmod=755 scripts/backup-rclone-cloudflare.sh /backup-rclone-cloudflare.sh
-COPY --chmod=755 scripts/backup-data-github.sh /backup-data-github.sh
-COPY --chmod=755 scripts/restore-data-github.sh /restore-data-github.sh
-COPY --chmod=755 entrypoint.sh /entrypoint.sh
-
+# Chmod the scripts
+RUN find . -name "*.sh" -exec chmod +x {} \;
 
 ENTRYPOINT ["/entrypoint.sh"]
 
