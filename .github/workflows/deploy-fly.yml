@@ -36,8 +36,6 @@ jobs:
     if: needs.check-fly-secret.outputs.fly-secret-exists == 'true'
     steps:
       - uses: superfly/flyctl-actions/setup-flyctl@master
-        with:
-          version: 0.1.112
       - name: Install Task
         uses: arduino/setup-task@v2
         with:
