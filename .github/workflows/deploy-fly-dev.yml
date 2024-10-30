@@ -6,11 +6,6 @@ on:
   push:
     branches:
       - dev
-    paths:
-      - Dockerfile.fly
-      - fly.toml
-      - config/**
-      - scripts/**
       
 jobs:
   check-fly-secret:
