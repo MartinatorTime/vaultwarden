@@ -54,36 +54,43 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && ln -snf /usr/share/zoneinfo/Europe/Riga /etc/localtime \
     && echo Europe/Riga > /etc/timezone
 
+# Optimized installation of tools with error handling
 RUN set -ex; \
     OVERMIND_VERSION=$(curl -s https://api.github.com/repos/DarthSim/overmind/releases/latest | jq -r '.tag_name'); \
     SUPERCRONIC_VERSION=$(curl -s https://api.github.com/repos/aptible/supercronic/releases/latest | jq -r '.tag_name'); \
     VAULT_VERSION=$(curl -s https://api.github.com/repos/dani-garcia/bw_web_builds/releases/latest | jq -r '.tag_name'); \
     CADDY_VERSION=$(curl -s https://api.github.com/repos/caddyserver/caddy/releases/latest | jq -r '.tag_name'); \
     CLOUDFLARED_VERSION="2024.10.0"; \
+    B2_VERSION=$(curl -s "https://api.github.com/repos/Backblaze/B2_Command_Line_Tool/releases/latest" | jq -r '.tag_name'); \
     \
-    curl -L -o overmind.gz "https://github.com/DarthSim/overmind/releases/download/$OVERMIND_VERSION/overmind-${OVERMIND_VERSION}-linux-amd64.gz" && \
-        gunzip overmind.gz && chmod +x overmind && mv overmind /usr/local/bin/ && rm overmind.gz; \
+    curl -L -o overmind.gz "https://github.com/DarthSim/overmind/releases/download/$OVERMIND_VERSION/overmind-${OVERMIND_VERSION}-linux-amd64.gz" || exit 1; \
+    gunzip overmind.gz && \
+    chmod +x overmind && mv overmind /usr/local/bin/; \
+    \ 
+    curl -L -o /usr/local/bin/supercronic "https://github.com/aptible/supercronic/releases/download/${SUPERCRONIC_VERSION}/supercronic-linux-amd64" || exit 1; \
+    chmod +x /usr/local/bin/supercronic; \
     \
-    curl -L -o /usr/local/bin/supercronic "https://github.com/aptible/supercronic/releases/download/${SUPERCRONIC_VERSION}/supercronic-linux-amd64" && chmod +x /usr/local/bin/supercronic; \
+    curl -L -o web-vault.tar.gz "https://github.com/dani-garcia/bw_web_builds/releases/download/${VAULT_VERSION}/bw_web_v${VAULT_VERSION#v}.tar.gz" || exit 1; \
+    tar -xzf web-vault.tar.gz -C / ; \
     \
-    curl -L -o web-vault.tar.gz "https://github.com/dani-garcia/bw_web_builds/releases/download/${VAULT_VERSION}/bw_web_v${VAULT_VERSION#v}.tar.gz" && \
-        tar -xzf web-vault.tar.gz -C / && rm web-vault.tar.gz ; \
+    wget -O caddy.tar.gz "https://github.com/caddyserver/caddy/releases/download/$CADDY_VERSION/caddy_${CADDY_VERSION#v}_linux_amd64.tar.gz" || exit 1; \
+        tar -xzf caddy.tar.gz -C /usr/local/bin/ caddy; \
     \
-    wget -O caddy.tar.gz "https://github.com/caddyserver/caddy/releases/download/$CADDY_VERSION/caddy_${CADDY_VERSION#v}_linux_amd64.tar.gz" && \
-        tar -xzf caddy.tar.gz -C /usr/local/bin/ caddy ; \
+    curl -L -o cloudflared.deb "https://github.com/cloudflare/cloudflared/releases/download/$CLOUDFLARED_VERSION/cloudflared-linux-amd64.deb" || exit 1; \
+    dpkg -i cloudflared.deb; \
     \
-    curl -L -o cloudflared.deb "https://github.com/cloudflare/cloudflared/releases/download/$CLOUDFLARED_VERSION/cloudflared-linux-amd64.deb" && \
-        dpkg -i cloudflared.deb && rm cloudflared.deb ; \
-    \
-    wget https://github.com/Backblaze/B2_Command_Line_Tool/releases/latest/download/b2-linux -O b2 && \
-        mv b2 /usr/local/bin/ && chmod +x /usr/local/bin/b2
+    curl -L -o /usr/local/bin/b2 "https://github.com/Backblaze/B2_Command_Line_Tool/releases/download/$B2_VERSION/b2-linux" || exit 1; \
+    chmod +x /usr/local/bin/b2;
 
+
+# Copy files with correct permissions (use a single COPY if your Docker version supports it)
 COPY --chmod=755 config/crontab /crontab
 COPY --chmod=755 config/Procfile /Procfile
 COPY --chmod=755 scripts/backup-rclone-cloudflare.sh /backup-rclone-cloudflare.sh
 COPY --chmod=755 scripts/backup-data-github.sh /backup-data-github.sh
 COPY --chmod=755 scripts/restore-data-github.sh /restore-data-github.sh
 COPY --chmod=755 entrypoint.sh /entrypoint.sh
+
 
 ENTRYPOINT ["/entrypoint.sh"]
 
