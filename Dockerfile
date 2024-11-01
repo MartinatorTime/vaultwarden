@@ -2,8 +2,8 @@ FROM vaultwarden/server:latest
 
 # You can choose what to install with vaultwarden
 ARG INSTALL_SUPERCRONIC=true
-ARG INSTALL_CADDY=fasle
-ARG INSTALL_B2=false
+ARG INSTALL_CADDY=true
+ARG INSTALL_B2=true
 ARG INSTALL_CLOUDFLARED=true
 ARG INSTALL_WEB_VAULT=true
 
@@ -116,7 +116,6 @@ RUN set -ex; \
 # Copy files to docker
 COPY scripts/*.sh /
 COPY Caddyfile /etc/caddy/Caddyfile
-COPY entrypoint.sh /entrypoint.sh
 
 # Chmod the scripts
 RUN find . -name "*.sh" -exec chmod +x {} \;
