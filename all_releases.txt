@@ -1,4 +1,4 @@
-dani-garcia/vaultwarden: 1.32.2
+dani-garcia/vaultwarden: 1.32.4
 dani-garcia/bw_web_builds: v2024.6.2c
 aptible/supercronic: v0.2.33
 DarthSim/overmind: v2.5.1
