@@ -49,7 +49,7 @@ ENV ROCKET_PROFILE=release \
 
 # Install dependencies and set timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    sqlite3 libnss3-tools libpq5 wget curl tar lsof jq gpg pgloader \
+    sqlite3 libnss3-tools libpq5 wget curl tar lsof jq gpg postgresql \
     ca-certificates openssl tmux procps rclone \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
