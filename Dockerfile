@@ -29,7 +29,7 @@ ENV ROCKET_PROFILE=release \
     SENDS_ALLOWED=true \
     SHOW_PASSWORD_HINT=false \
     SIGNUPS_ALLOWED=false \
-    SIGNUPS_VERIFY=true \
+    SIGNUPS_VERIFY=false \
     USE_SYSLOG=false \
     WEBSOCKET_ENABLED=true \
     WEB_VAULT_ENABLED=true \
@@ -44,7 +44,7 @@ ENV ROCKET_PROFILE=release \
     LOGIN_RATELIMIT_MAX_BURST=5 \
     LOGIN_RATELIMIT_SECONDS=60 \
     ADMIN_SESSION_LIFETIME=3 \
-    REQUIRE_DEVICE_EMAIL=true
+    REQUIRE_DEVICE_EMAIL=false
 
 # Install dependencies and set timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
