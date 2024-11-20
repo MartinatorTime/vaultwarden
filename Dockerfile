@@ -4,7 +4,7 @@ FROM vaultwarden/server:latest
 ARG INSTALL_SUPERCRONIC=true
 ARG INSTALL_CADDY=false
 ARG INSTALL_B2=true
-ARG SYNC_R2=false
+ARG SYNC_R2=true
 ARG INSTALL_CLOUDFLARED=true
 ARG INSTALL_WEB_VAULT=true
 
@@ -97,7 +97,7 @@ RUN set -ex; \
     fi; \
     \
     if [ "$SYNC_R2" = "true" ]; then \
-    echo "* * * * * /sync-r2-rclone.sh" >> /crontab; \
+    echo "0 * * * * /sync-r2-rclone.sh" >> /crontab; \
     fi; \
     \
     if [ "$INSTALL_B2" = "true" ]; then \
