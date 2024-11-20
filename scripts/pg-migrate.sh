@@ -1,6 +1,6 @@
 #!/bin/bash
 
-psql -c "
+pgloader -c "
     LOAD DATABASE $PG1
     INTO $PG2
     WITH DATA ONLY
