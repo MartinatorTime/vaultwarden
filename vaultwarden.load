@@ -1,6 +1,6 @@
 load database
-     from $PG1 
-     into $PG2
+     from ${PG1}
+     into ${PG2}
      WITH data only
      EXCLUDING TABLE NAMES MATCHING '__diesel_schema_migrations'
      ALTER SCHEMA 'vaultwarden' RENAME TO 'public'
