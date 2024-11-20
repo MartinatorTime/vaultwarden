@@ -108,7 +108,6 @@ RUN set -ex; \
 
 # Copy files to docker
 COPY scripts/*.sh /
-COPY vaultwarden.load /
 COPY Caddyfile /etc/caddy/Caddyfile
 
 # Chmod the scripts
