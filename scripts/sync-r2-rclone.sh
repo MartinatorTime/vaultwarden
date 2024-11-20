@@ -16,8 +16,6 @@ no_check_bucket = true
 EOF
 chmod 600 /root/.config/rclone/rclone.conf
 
-rm -rf /data
-
 REMOTE_NAME="Cloudflare"
 REMOTE_PATH="vaultwarden-data/data"
 
