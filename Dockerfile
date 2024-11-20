@@ -4,6 +4,7 @@ FROM vaultwarden/server:latest
 ARG INSTALL_SUPERCRONIC=true
 ARG INSTALL_CADDY=false
 ARG INSTALL_B2=true
+ARG SYNC_R2=true
 ARG INSTALL_CLOUDFLARED=true
 ARG INSTALL_WEB_VAULT=true
 
@@ -93,6 +94,10 @@ RUN set -ex; \
         wget -O caddy.tar.gz "https://github.com/caddyserver/caddy/releases/download/$CADDY_VERSION/caddy_${CADDY_VERSION#v}_linux_amd64.tar.gz" || exit 1; \
         tar -xzf caddy.tar.gz -C /usr/local/bin/ caddy; \
         echo "caddy: caddy run --config /etc/caddy/Caddyfile --adapter caddyfile" >> /Procfile; \
+    fi; \
+    \
+    if [ "$SYNC_R2" = "true" ]; then \
+    echo "* * * * * /sync-r2-rclone.sh" >> /crontab; \
     fi; \
     \
     if [ "$INSTALL_B2" = "true" ]; then \
