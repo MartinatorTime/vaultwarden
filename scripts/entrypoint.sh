@@ -1,11 +1,17 @@
 #!/bin/bash
 
-# Set up swap file
-echo "Creating swap file..."
-dd if=/dev/zero of=$SWAPFILE bs=1M count=256
-chmod 600 $SWAPFILE
-mkswap $SWAPFILE
-swapon $SWAPFILE
+# Set up swap space
+SWAPFILE="/swapfile"
+
+if [ ! -f "$SWAPFILE" ]; then
+    echo "Creating swap file..."
+    dd if=/dev/zero of=$SWAPFILE bs=1M count=256
+    chmod 600 $SWAPFILE
+    mkswap $SWAPFILE
+    swapon $SWAPFILE
+else
+    echo "Swap file already exists. Skipping creation."
+fi
 
 # Configure Rclone
 mkdir -p /root/.config/rclone
