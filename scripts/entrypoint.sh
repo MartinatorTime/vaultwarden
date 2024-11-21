@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set up swap space
-SWAPFILE="/swapfile"
+SWAPFILE="/.fly-upper-layer/swapfile"
 
 if [ ! -f "$SWAPFILE" ]; then
     echo "Creating swap file..."
