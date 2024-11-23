@@ -4,7 +4,7 @@ sqlite3 /data/db.sqlite3 '.backup /data/db.bak'
 tar -czf /backup.tar.gz /data
 
 #Encrypt File and Upload to GitHub
-echo "$PASS" | gpg --batch --yes --passphrase-fd 0 --cipher-algo AES256 --symmetric backup.tar.gz
+gpg --batch --yes --passphrase "$PASS" --cipher-algo AES256 --symmetric backup.tar.gz
 REPO_NAME="vaultwarden"
 TAG="FLY-DATA"
 USERNAME="MartinatorTime"
