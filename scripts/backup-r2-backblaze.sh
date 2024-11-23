@@ -7,11 +7,11 @@ tar -czf /backup.tar.gz /data
 echo "$PASS" | gpg --batch --yes --passphrase-fd  0 --cipher-algo AES256 --symmetric backup.tar.gz
 #
 # Authorize with Backblaze B2
-b2 authorize-account "$B2_APPLICATION_KEY_ID" "$B2_APPLICATION_KEY"
+b2 account authorize "$B2_APPLICATION_KEY_ID" "$B2_APPLICATION_KEY"
 #
 # Upload the encrypted backup file to B2
 FILE_NAME="DATA-backup-$(date +'%d_%m_%Y-%H_%M').tar.gz.gpg"
-b2 upload-file $B2_BUCKET backup.tar.gz.gpg $FILE_NAME
+b2 file upload $B2_BUCKET backup.tar.gz.gpg $FILE_NAME
 #
 # Remove local files
 rm *.tar.gz.gpg
