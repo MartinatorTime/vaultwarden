@@ -3,7 +3,7 @@ FROM vaultwarden/server:latest
 # You can choose what to install with vaultwarden
 ARG INSTALL_SUPERCRONIC=true
 ARG INSTALL_CADDY=false
-ARG INSTALL_B2=true
+ARG INSTALL_B2=false
 ARG SYNC_R2=true
 ARG INSTALL_CLOUDFLARED=true
 ARG INSTALL_WEB_VAULT=true
