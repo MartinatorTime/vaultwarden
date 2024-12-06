@@ -115,4 +115,4 @@ RUN find . -name "*.sh" -exec chmod +x {} \;
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["overmind", "start", "-r", "all"]
+CMD ["overmind", "start", "-D", "-r", "all"]
