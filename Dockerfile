@@ -14,7 +14,7 @@ ARG TIMEZONE=Europe/Riga
 ENV ROCKET_PROFILE=release \
     ROCKET_ADDRESS=0.0.0.0 \
     ROCKET_PORT=8080 \
-    ROCKET_WORKERS=50 \
+    ROCKET_WORKERS=10 \
     SSL_CERT_DIR=/etc/ssl/certs \
     EMERGENCY_ACCESS_ALLOWED=true \
     EXTENDED_LOGGING=true \
@@ -115,4 +115,4 @@ RUN find . -name "*.sh" -exec chmod +x {} \;
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["overmind", "start"]
+CMD ["overmind", "start", "-r", "all"]
