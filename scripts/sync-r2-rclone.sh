@@ -47,11 +47,3 @@ if (( $(($CURRENT_TIME - $LAST_MODIFIED)) > 60 )); then
 else
   echo "Sync skipped, no changes detected."
 fi
-
-# Trap SIGTERM signal for graceful shutdown
-trap "echo 'Received SIGTERM, exiting...' && exit 0" SIGTERM
-
-# Run indefinitely
-while true; do
-  sleep 60
-done

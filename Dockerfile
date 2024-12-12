@@ -97,7 +97,7 @@ RUN set -ex; \
     fi; \
     \
     if [ "$SYNC_R2" = "true" ]; then \
-        echo "data-sync: /sync-r2-rclone.sh" >> /Procfile; \
+        echo "*/1 * * * * /sync-r2-rclone.sh" >> /crontab; \
     fi; \
     \
     if [ "$INSTALL_B2" = "true" ]; then \
