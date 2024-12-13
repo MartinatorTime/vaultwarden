@@ -40,7 +40,7 @@ fi
 while true; do
   # Check if the /data directory has been modified
   CURRENT_TIME=$(date +%s)
-  if (( $(($CURRENT_TIME - $LAST_MODIFIED) > 60 )); then
+  if [ $((CURRENT_TIME - LAST_MODIFIED)) -gt 60 ]; then
     rclone sync ./data $REMOTE_NAME:$REMOTE_PATH
     echo "Sync completed successfully!"
     LAST_MODIFIED=$(stat -c %Y /data)
