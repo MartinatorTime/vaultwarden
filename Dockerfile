@@ -45,7 +45,8 @@ ENV ROCKET_PROFILE=release \
     LOGIN_RATELIMIT_MAX_BURST=5 \
     LOGIN_RATELIMIT_SECONDS=60 \
     ADMIN_SESSION_LIFETIME=3 \
-    REQUIRE_DEVICE_EMAIL=false
+    REQUIRE_DEVICE_EMAIL=false \
+    R2_DATA_SYNC_LOG=true
 
 # Install dependencies and set timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
