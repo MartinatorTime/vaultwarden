@@ -37,21 +37,15 @@ if [ -z "$LAST_MODIFIED" ]; then
   exit 1
 fi
 
-# Get the current time
-CURRENT_TIME=$(date +%s)
-
-# Check if more than a minute has passed since the last sync
-if (( $(($CURRENT_TIME - $LAST_MODIFIED)) > 60 )); then
-  rclone sync ./data $REMOTE_NAME:$REMOTE_PATH
-  echo "Sync completed successfully!"
-else
-  echo "Sync skipped, no changes detected."
-fi
-
-# Trap SIGTERM signal for graceful shutdown
-trap "echo 'Received SIGTERM, exiting...' && exit 0" SIGTERM
-
-# Run indefinitely
 while true; do
-  sleep 60
+  # Check if the /data directory has been modified
+  CURRENT_TIME=$(date +%s)
+  if (( $(($CURRENT_TIME - $LAST_MODIFIED) > 60 )); then
+    rclone sync ./data $REMOTE_NAME:$REMOTE_PATH
+    echo "Sync completed successfully!"
+    LAST_MODIFIED=$(stat -c %Y /data)
+  else
+    echo "Sync skipped, no changes detected."
+    sleep 60
+  fi
 done
