@@ -28,24 +28,24 @@ chmod 600 /root/.config/rclone/rclone.conf
 REMOTE_NAME="Cloudflare"
 REMOTE_PATH="vaultwarden-data/data"
 
-# Get the modification time of the /data directory
-LAST_MODIFIED=$(stat -c %Y /data)
-
-# Check if the /data directory has been modified since the last sync
-if [ -z "$LAST_MODIFIED" ]; then
-  echo "Error: Unable to get modification time of /data directory."
-  exit 1
-fi
-
 while true; do
+  # Get the modification time of the /data directory
+  LAST_MODIFIED=$(stat -c %Y /data)
+
+  # Check if the /data directory has been modified since the last sync
+  if [ -z "$LAST_MODIFIED" ]; then
+    echo "Error: Unable to get modification time of /data directory."
+    exit 1
+  fi
+
   # Check if the /data directory has been modified
   CURRENT_TIME=$(date +%s)
   if [ $((CURRENT_TIME - LAST_MODIFIED)) -gt 60 ]; then
     rclone sync ./data $REMOTE_NAME:$REMOTE_PATH
     echo "Sync completed successfully!"
-    LAST_MODIFIED=$(stat -c %Y /data)
   else
     echo "Sync skipped, no changes detected."
-    sleep 60
   fi
+
+  sleep 60
 done
