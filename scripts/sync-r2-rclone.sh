@@ -28,11 +28,11 @@ chmod 600 /root/.config/rclone/rclone.conf
 REMOTE_NAME="Cloudflare"
 REMOTE_PATH="vaultwarden-data/data"
 
-LAST_MODIFIED=$(stat -c %Y /data)
+LAST_MODIFIED=$(find /data -type f -exec stat -c %Y {} \; | sort -n | tail -1)
 
 while true; do
-  # Get the current modification time of the /data directory
-  CURRENT_MODIFIED=$(stat -c %Y /data)
+  # Get the current modification time of the files in the /data directory
+  CURRENT_MODIFIED=$(find /data -type f -exec stat -c %Y {} \; | sort -n | tail -1)
 
   # Check if the /data directory has been modified since the last sync
   if [ $CURRENT_MODIFIED -gt $LAST_MODIFIED ]; then
