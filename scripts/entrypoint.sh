@@ -3,16 +3,17 @@
 # Set up swap space
 SWAPFILE="/.fly-upper-layer/swapfile"
 
-if [ ! -f "$SWAPFILE" ]; then
+if [[ "$FLY_SWAP" == "true" ]] && [ ! -f "$SWAPFILE" ]; then
     echo "Creating swap file..."
     dd if=/dev/zero of=$SWAPFILE bs=1M count=256
     chmod 600 $SWAPFILE
     mkswap $SWAPFILE
     swapon $SWAPFILE
 else
-    echo "Swap file already exists. Skipping creation."
+    echo "Swap file already exists or FLY_SWAP is not set to true. Skipping creation."
 fi
 
+if [[ "$SYNC_DATA_CLOUDFLARE_R2" == "true" ]]; then
 # Configure Rclone
 mkdir -p /root/.config/rclone
 chmod 700 /root/.config/rclone
@@ -37,6 +38,6 @@ REMOTE_NAME="Cloudflare"
 REMOTE_PATH="vaultwarden-data/data"
 
 rclone copy $REMOTE_NAME:$REMOTE_PATH ./data
-
+fi
 # Run the original entrypoint
 exec "$@"

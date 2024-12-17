@@ -3,10 +3,11 @@ FROM vaultwarden/server:latest
 # You can choose what to install with vaultwarden
 ARG INSTALL_SUPERCRONIC=true
 ARG INSTALL_CADDY=false
-ARG INSTALL_B2=false
-ARG SYNC_R2=true
+ARG BACKUP_BACKBLAZE_R2=false
+ARG SYNC_DATA_CLOUDFLARE_R2=true
 ARG INSTALL_CLOUDFLARED=true
-ARG INSTALL_WEB_VAULT=true
+ARG INSTALL_LAST_WEB_VAULT=true
+ARG BACKUP_RCLONE_R2=true
 
 # Set up timezone
 ARG TIMEZONE=Europe/Riga
@@ -14,7 +15,7 @@ ARG TIMEZONE=Europe/Riga
 ENV ROCKET_PROFILE=release \
     ROCKET_ADDRESS=0.0.0.0 \
     ROCKET_PORT=8080 \
-    ROCKET_WORKERS=10 \
+    ROCKET_WORKERS=20 \
     SSL_CERT_DIR=/etc/ssl/certs \
     EMERGENCY_ACCESS_ALLOWED=true \
     EXTENDED_LOGGING=true \
@@ -30,7 +31,7 @@ ENV ROCKET_PROFILE=release \
     SENDS_ALLOWED=true \
     SHOW_PASSWORD_HINT=false \
     SIGNUPS_ALLOWED=false \
-    SIGNUPS_VERIFY=false \
+    SIGNUPS_VERIFY=true \
     USE_SYSLOG=false \
     WEBSOCKET_ENABLED=true \
     WEB_VAULT_ENABLED=true \
@@ -46,7 +47,8 @@ ENV ROCKET_PROFILE=release \
     LOGIN_RATELIMIT_SECONDS=60 \
     ADMIN_SESSION_LIFETIME=3 \
     REQUIRE_DEVICE_EMAIL=false \
-    R2_DATA_SYNC_LOG=false
+    R2_DATA_SYNC_LOG=false \
+    FLY_SWAP=true
 
 # Install dependencies and set timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -77,10 +79,13 @@ RUN set -ex; \
         chmod +x /usr/local/bin/supercronic; \
         echo "backup: supercronic /crontab" >> /Procfile; \
         echo "1 0 * * * /backup-data-github.sh" > /crontab; \
-        echo "5 0 * * * /backup-rclone-cloudflare.sh" >> /crontab; \
     fi; \
     \
-    if [ "$INSTALL_WEB_VAULT" = "true" ]; then \
+    if [ "$BACKUP_RCLONE_R2" = "true" ]; then \
+        echo "5 0 * * * /backup-r2-rclone.sh" >> /crontab; \
+    fi; \
+    \
+    if [ "$INSTALL_LAST_WEB_VAULT" = "true" ]; then \
         curl -L -o web-vault.tar.gz "https://github.com/dani-garcia/bw_web_builds/releases/download/${VAULT_VERSION}/bw_web_v${VAULT_VERSION#v}.tar.gz" || exit 1; \
         tar -xzf web-vault.tar.gz -C / ; \
     fi; \
@@ -97,11 +102,11 @@ RUN set -ex; \
         echo "caddy: caddy run --config /etc/caddy/Caddyfile --adapter caddyfile" >> /Procfile; \
     fi; \
     \
-    if [ "$SYNC_R2" = "true" ]; then \
+    if [ "$SYNC_DATA_CLOUDFLARE_R2" = "true" ]; then \
         echo "data-sync: /sync-r2-rclone.sh" >> /Procfile; \
     fi; \
     \
-    if [ "$INSTALL_B2" = "true" ]; then \
+    if [ "$BACKUP_BACKBLAZE_R2" = "true" ]; then \
         curl -L -o /usr/local/bin/b2 "https://github.com/Backblaze/B2_Command_Line_Tool/releases/download/$B2_VERSION/b2-linux" || exit 1; \
         chmod +x /usr/local/bin/b2; \
         echo "3 0 * * * /backup-r2-backblaze.sh" >> /crontab; \
