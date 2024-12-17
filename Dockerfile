@@ -48,7 +48,7 @@ ENV ROCKET_PROFILE=release \
     ADMIN_SESSION_LIFETIME=3 \
     REQUIRE_DEVICE_EMAIL=false \
     R2_DATA_SYNC_LOG=false \
-    FLY_SWAP=true
+    FLY_SWAP=false
 
 # Install dependencies and set timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
