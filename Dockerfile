@@ -48,6 +48,7 @@ ENV ROCKET_PROFILE=release \
     ADMIN_SESSION_LIFETIME=3 \
     REQUIRE_DEVICE_EMAIL=false \
     R2_DATA_SYNC_LOG=false \
+    SYNC_DATA_CLOUDFLARE_R2=${SYNC_DATA_CLOUDFLARE_R2} \
     FLY_SWAP=false
 
 # Install dependencies and set timezone

@@ -14,34 +14,33 @@ else
 fi
 
 if [[ "$SYNC_DATA_CLOUDFLARE_R2" == "true" ]]; then
-    # Configure Rclone
-    mkdir -p /root/.config/rclone
-    chmod 700 /root/.config/rclone
+# Configure Rclone
+mkdir -p /root/.config/rclone
+chmod 700 /root/.config/rclone
 
-    cat << EOF > /root/.config/rclone/rclone.conf
-    [Cloudflare]
-    type = s3
-    provider = Cloudflare
-    access_key_id = $CF_ACCESS_KEY
-    secret_access_key = $CF_ACCESS_KEY_SECRET
-    region = auto
-    endpoint = $CF_R2_ENDPOINT
-    acl = private
-    no_check_bucket = true
-    EOF
-    chmod 600 /root/.config/rclone/rclone.conf
+cat << EOF > /root/.config/rclone/rclone.conf
+[Cloudflare]
+type = s3
+provider = Cloudflare
+access_key_id = $CF_ACCESS_KEY
+secret_access_key = $CF_ACCESS_KEY_SECRET
+region = auto
+endpoint = $CF_R2_ENDPOINT
+acl = private
+no_check_bucket = true
+EOF
+chmod 600 /root/.config/rclone/rclone.conf
 
-    mkdir -p /data
-    chmod 700 /data
+mkdir -p /data
+chmod 700 /data
 
-    REMOTE_NAME="Cloudflare"
-    REMOTE_PATH="vaultwarden-data/data"
+REMOTE_NAME="Cloudflare"
+REMOTE_PATH="vaultwarden-data/data"
 
-    rclone copy $REMOTE_NAME:$REMOTE_PATH ./data
-    
-    echo "Data sync complete."
+rclone copy $REMOTE_NAME:$REMOTE_PATH ./data
+echo "Data synced from R2"
 else
-    echo "Skipping data sync."
+echo "Skipping data sync from R2"
 fi
 
 # Run the original entrypoint
