@@ -1,4 +1,4 @@
-# Vaultwarden Auto-Deploy on Fly.io
+# Vaultwarden Auto-Deploy on Fly.io or other platforms
 
 This project automates the deployment and maintenance of Vaultwarden (formerly Bitwarden_RS) on Fly.io or ther platforms, featuring automatic backups, secure access via Cloudflare Tunnel, and streamlined dependency management.
 
@@ -19,7 +19,7 @@ This project automates the deployment and maintenance of Vaultwarden (formerly B
 * **Auto sync with rclone R2** Change entrypoit and sync-r2-rclone.sh with your endpoint data
 * **Auto sync check every 60 sec** if /data folder and file are modified, if yes, it sync with r2.
 
-## Dependencies
+## Dependencies and Tools
 
 * [Fly.io](https://fly.io/)
 * [Vaultwarden](https://github.com/dani-garcia/vaultwarden)
@@ -87,27 +87,28 @@ This project automates the deployment and maintenance of Vaultwarden (formerly B
 
 5. **GitHub Secrets:** Add the following secrets to your GitHub repository or to your provider dashboard:
     * `ADMIN_TOKEN`
-    * `DATABASE` (Database URL)
+    * `DATABASE_URL` (Database URL)
     * `FLY_API_TOKEN`
     * `FLY_APP` (Fly.io app name)
     * `USERNAME` (GitHub username for backups)
     * `PASS` (Passphrase to encrypt/decrypt backups)
     * `PUSH_INSTALLATION_ID` (Refer to Vaultwarden documentation)
-    * `PUSH_INSTALLATION_KEY`
-    * `B2_APPLICATION_KEY_ID`
-    * `B2_APPLICATION_KEY`
-    * `B2_BUCKET`
+    * `PUSH_INSTALLATION_KEY` (Refer to Vaultwarden documentation)
+    * `B2_APPLICATION_KEY_ID`(Backblaze B2 Application Key ID)
+    * `B2_APPLICATION_KEY` (Backblaze B2 Application Key)
+    * `B2_BUCKET` (Backblaze B2 Bucket Name)
     * `SMTP_HOST` (e.g., `smtp.gmail.com`)
     * `SMTP_PORT` (e.g., `465` or `587`)
     * `SMTP_SECURITY` (e.g., `force_tls`)
-    * `SMTP_USERNAME`
-    * `SMTP_PASSWORD`
+    * `SMTP_USERNAME` (e.g., `VXu5W@example.com`)
+    * `SMTP_PASSWORD` (e.g., `password`)
     * `CF_ACCESS_KEY` (Cloudflare R2 Access Key ID)
     * `CF_ACCESS_KEY_SECRET` (Cloudflare R2 Access Key Secret)
     * `CF_R2_ENDPOINT` (Cloudflare R2 Endpoint)
-    * `DOMAIN` (Your domain, e.g., `vault.my.com`)
-    * `TOKEN` (GitHub token for uploading backups)
     * `CF_TOKEN` (Cloudflare Tunnel token -- see `start_cloudflared.sh`)
+    * `DOMAIN` (Your domain, e.g., `https://vault.my.com`)
+    * `DOMAIN_NAME` (e.g., `vault.my.com`)
+    * `GH_TOKEN` (GitHub token for uploading backups)
 
 6. **Backup Scripts:** Update `scripts/restore-data-github.sh` and `scripts/backup-data-github.sh` with your GitHub repository information (username, repo name).
     * In `backup-data-github.sh` change to your details:

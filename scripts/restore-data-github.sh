@@ -10,7 +10,7 @@ REPO="vaultwarden"
 FILE_NAME="$1"
 
 # Concatenate the values together for a 
-API_URL="https://$GITHUB_TOKEN:@api.github.com/repos/$USERNAME/$REPO"
+API_URL="https://$GH_TOKEN:@api.github.com/repos/$USERNAME/$REPO"
 
 # Gets info on latest release, gets first uploaded asset id of a release,
 # More info on jq being used to parse json: https://stedolan.github.io/jq/tutorial/
