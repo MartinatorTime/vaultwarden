@@ -37,10 +37,10 @@ while true; do
   # Check if the /data directory has been modified since the last sync
   if [ $CURRENT_MODIFIED -gt $LAST_MODIFIED ]; then
     if [ "$R2_DATA_SYNC_LOG" = "true" ]; then
-      rclone sync ./data $REMOTE_NAME:$REMOTE_PATH --delete-during
+      rclone sync ./data $REMOTE_NAME:$REMOTE_PATH --ignore-errors
       echo "Sync completed successfully!"
     else
-      rclone sync ./data $REMOTE_NAME:$REMOTE_PATH --delete-during
+      rclone sync ./data $REMOTE_NAME:$REMOTE_PATH --ignore-errors
     fi
     LAST_MODIFIED=$CURRENT_MODIFIED
   else
