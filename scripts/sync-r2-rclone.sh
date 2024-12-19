@@ -28,18 +28,6 @@ chmod 600 /root/.config/rclone/rclone.conf
 REMOTE_NAME="Cloudflare"
 REMOTE_PATH="vaultwarden-data/data"
 
-is_file_being_written() {
-  local file="$1"
-  local size1=$(stat -c %s "$file")
-  sleep 5
-  local size2=$(stat -c %s "$file")
-  if [ "$size1" -ne "$size2" ]; then
-    return 0 # File is being written
-  else
-    return 1 # File is not being written
-  fi
-}
-
 LAST_MODIFIED=$(find /data -type f -exec stat -c %Y {} \; | sort -n | tail -1)
 
 while true; do
@@ -48,19 +36,13 @@ while true; do
 
   # Check if the /data directory has been modified since the last sync
   if [ $CURRENT_MODIFIED -gt $LAST_MODIFIED ]; then
-    if is_file_being_written "/data/vaultwarden.log"; then
-      if [ "$R2_DATA_SYNC_LOG" = "true" ]; then
-        echo "Sync skipped, vaultwarden.log is being written to."
-      fi
+    if [ "$R2_DATA_SYNC_LOG" = "true" ]; then
+      rclone sync ./data $REMOTE_NAME:$REMOTE_PATH
+      echo "Sync completed successfully!"
     else
-      if [ "$R2_DATA_SYNC_LOG" = "true" ]; then
-        rclone sync ./data $REMOTE_NAME:$REMOTE_PATH
-        echo "Sync completed successfully!"
-      else
-        rclone sync ./data $REMOTE_NAME:$REMOTE_PATH
-      fi
-      LAST_MODIFIED=$CURRENT_MODIFIED
+      rclone sync ./data $REMOTE_NAME:$REMOTE_PATH
     fi
+    LAST_MODIFIED=$CURRENT_MODIFIED
   else
     if [ "$R2_DATA_SYNC_LOG" = "true" ]; then
       echo "Sync skipped, no changes detected."
@@ -68,4 +50,14 @@ while true; do
   fi
 
   sleep 60
+
+  # Add a check to see if the vaultwarden.log file is being written to
+  if [ -f "/data/vaultwarden.log" ]; then
+    if [ $(tail -c 1 /data/vaultwarden.log) != "" ]; then
+      # If the file is being written to, skip the sync operation
+      if [ "$R2_DATA_SYNC_LOG" = "true" ]; then
+        echo "Sync skipped, vaultwarden.log is being written to."
+      fi
+    fi
+  fi
 done
