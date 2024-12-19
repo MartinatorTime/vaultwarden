@@ -50,14 +50,4 @@ while true; do
   fi
 
   sleep 60
-
-  # Add a check to see if the vaultwarden.log file is being written to
-  if [ -f "/data/vaultwarden.log" ]; then
-    if [ $(tail -c 1 /data/vaultwarden.log) != "" ]; then
-      # If the file is being written to, skip the sync operation
-      if [ "$R2_DATA_SYNC_LOG" = "true" ]; then
-        echo "Sync skipped, vaultwarden.log is being written to."
-      fi
-    fi
-  fi
 done
