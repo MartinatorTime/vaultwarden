@@ -36,6 +36,14 @@ while true; do
 
   # Check if the /data directory has been modified since the last sync
   if [ $CURRENT_MODIFIED -gt $LAST_MODIFIED ]; then
+    # Check if vaultwarden.log is in use
+    while lsof ./data/vaultwarden.log > /dev/null 2>&1; do
+      if [ "$R2_DATA_SYNC_LOG" = "true" ]; then
+        echo "vaultwarden.log is in use, waiting..."
+      fi
+      sleep 5
+    done
+
     if [ "$R2_DATA_SYNC_LOG" = "true" ]; then
       rclone sync ./data $REMOTE_NAME:$REMOTE_PATH
       echo "Sync completed successfully!"
