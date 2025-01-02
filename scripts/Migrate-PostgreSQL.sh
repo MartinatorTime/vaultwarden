@@ -52,7 +52,7 @@ fi
 
 # Dump data only, excluding specified tables, with options
 echo "Dumping data from source database..."
-pg_dump -Fc --data-only --no-owner --no-privileges --no-tablespaces --schema-only -d "${SOURCE_CONN}"  --exclude-table "__diesel_schema_migrations" > "${TEMP_FILE}"
+pg_dump -Fc --data-only --no-owner --no-privileges --no-tablespaces -d "${SOURCE_CONN}"  --exclude-table "__diesel_schema_migrations" > "${TEMP_FILE}"
 
 if [ $? -ne 0 ]; then
   echo "Error: Data dump failed."
