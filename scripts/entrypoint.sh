@@ -13,7 +13,7 @@ else
     echo "Swap file already exists or FLY_SWAP is not set to true. Skipping creation."
 fi
 
-if [[ "$SYNC_DATA_CLOUDFLARE_R2" == "true" ]]; then
+if [[ "$SYNC_DATA_CLOUDFLARE_R2" == "false" ]]; then
 # Configure Rclone
 mkdir -p /root/.config/rclone
 chmod 700 /root/.config/rclone
@@ -37,7 +37,7 @@ chmod 700 /data
 REMOTE_NAME="Cloudflare"
 REMOTE_PATH="vaultwarden-data"
 
-rclone copy $REMOTE_NAME:$REMOTE_PATH ./data
+rclone copy Cloudflare:vaultwarden-data ./data
 echo "Data synced from R2"
 else
 echo "Skipping data sync from R2"
