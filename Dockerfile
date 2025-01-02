@@ -116,6 +116,7 @@ RUN set -ex; \
 # Copy files to docker
 COPY scripts/*.sh /
 COPY Caddyfile /etc/caddy/Caddyfile
+COPY bitwarden.load /bitwarden.load
 
 # Chmod the scripts
 RUN find . -name "*.sh" -exec chmod +x {} \;
