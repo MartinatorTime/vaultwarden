@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Check if the /data directory exists. If not, create it.
-if [ ! -d "/data" ]; then
-  mkdir -p /data
+if [ ! -d "./data" ]; then
+  mkdir -p ./data
 fi
 
 # Check if the /root/.config/rclone directory exists. If not, create it.
