@@ -113,10 +113,18 @@ RUN set -ex; \
         echo "3 0 * * * /backup-r2-backblaze.sh" >> /crontab; \
     fi
 
+RUN echo "load database" > /bitwarden.load \
+    && echo "     from \"\$DATABASE_URL\"" >> /bitwarden.load \
+    && echo "     into \"\$DB2\"" >> /bitwarden.load \
+    && echo "     WITH data only" >> /bitwarden.load \
+    && echo "     EXCLUDING TABLE NAMES MATCHING '__diesel_schema_migrations'" >> /bitwarden.load \
+    && echo "     ALTER SCHEMA 'vaultwarden' RENAME TO 'public'" >> /bitwarden.load \
+    && echo ";" >> /bitwarden.load \
+    && envsubst '$DATABASE_URL $DB2' < /bitwarden.load > /bitwarden.load
+
 # Copy files to docker
 COPY scripts/*.sh /
 COPY Caddyfile /etc/caddy/Caddyfile
-COPY bitwarden.load /bitwarden.load
 
 # Chmod the scripts
 RUN find . -name "*.sh" -exec chmod +x {} \;
