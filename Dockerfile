@@ -54,7 +54,7 @@ ENV ROCKET_PROFILE=release \
 # Install dependencies and set timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
     sqlite3 libnss3-tools libpq5 wget curl tar lsof jq gpg gnupg2 postgresql pgloader \
-    ca-certificates openssl tmux procps rclone gettext \
+    ca-certificates openssl tmux procps rclone \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
@@ -112,15 +112,6 @@ RUN set -ex; \
         chmod +x /usr/local/bin/b2; \
         echo "3 0 * * * /backup-r2-backblaze.sh" >> /crontab; \
     fi
-
-RUN echo "load database" > /bitwarden.load \
-    && echo "     from \"\$DATABASE_URL\"" >> /bitwarden.load \
-    && echo "     into \"\$DB2\"" >> /bitwarden.load \
-    && echo "     WITH data only" >> /bitwarden.load \
-    && echo "     EXCLUDING TABLE NAMES MATCHING '__diesel_schema_migrations'" >> /bitwarden.load \
-    && echo "     ALTER SCHEMA 'vaultwarden' RENAME TO 'public'" >> /bitwarden.load \
-    && echo ";" >> /bitwarden.load \
-    && envsubst '$DATABASE_URL $DB2' < /bitwarden.load > /bitwarden.load
 
 # Copy files to docker
 COPY scripts/*.sh /
