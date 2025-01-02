@@ -26,7 +26,7 @@ EOF
 chmod 600 /root/.config/rclone/rclone.conf
 
 REMOTE_NAME="Cloudflare"
-REMOTE_PATH="vaultwarden-data/data"
+REMOTE_PATH="vaultwarden-data"
 
 LAST_MODIFIED=$(find /data -type f -exec stat -c %Y {} \; | sort -n | tail -1)
 

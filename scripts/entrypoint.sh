@@ -35,7 +35,7 @@ mkdir -p /data
 chmod 700 /data
 
 REMOTE_NAME="Cloudflare"
-REMOTE_PATH="vaultwarden-data/data"
+REMOTE_PATH="vaultwarden-data"
 
 rclone copy $REMOTE_NAME:$REMOTE_PATH ./data
 echo "Data synced from R2"
