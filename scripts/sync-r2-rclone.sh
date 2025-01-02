@@ -37,10 +37,17 @@ while true; do
   # Check if the /data directory has been modified since the last sync
   if [ $CURRENT_MODIFIED -gt $LAST_MODIFIED ]; then
     if [ "$R2_DATA_SYNC_LOG" = "true" ]; then
-      rclone sync ./data $REMOTE_NAME:$REMOTE_PATH
+      TEMP_DIR=$(mktemp -d)
+      echo "Temporary directory: $TEMP_DIR"
+      cp -r /data $TEMP_DIR
+      rclone sync $TEMP_DIR $REMOTE_NAME:$REMOTE_PATH
       echo "Sync completed successfully!"
+      rm -rf $TEMP_DIR
     else
-      rclone sync ./data $REMOTE_NAME:$REMOTE_PATH
+      TEMP_DIR=$(mktemp -d)
+      cp -r /data $TEMP_DIR
+      rclone sync $TEMP_DIR $REMOTE_NAME:$REMOTE_PATH
+      rm -rf $TEMP_DIR
     fi
     LAST_MODIFIED=$CURRENT_MODIFIED
   else

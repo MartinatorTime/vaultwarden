@@ -3,9 +3,6 @@ name: Deploy to Fly DEV
 on:
   workflow_call:
   workflow_dispatch:
-  push:
-    branches:
-      - dev
       
 jobs:
   check-fly-secret:
