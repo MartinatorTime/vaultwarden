@@ -4,7 +4,7 @@
 SOURCE_CONN="$DATABASE_URL"
 
 # Target database connection string
-TARGET_CONN="$D2"
+TARGET_CONN="$DB2"
 
 
 # Backup directory
@@ -95,7 +95,7 @@ fi
 
 # Dump data only from the source database
 echo "Dumping data from source database..."
-pg_dump -h "${SOURCE_HOST}" -p "${SOURCE_PORT}" -U "${SOURCE_USER}" -Fc --no-privileges --no-owner --no-tablespaces --data-only "${SOURCE_DB}" > "${TEMP_FILE}"
+pg_dump -h "${SOURCE_HOST}" -p "${SOURCE_PORT}" -U "${SOURCE_USER}" -Fc --sslmode=require --no-privileges --no-owner --no-tablespaces --data-only "${SOURCE_DB}" > "${TEMP_FILE}"
 
 if [ $? -ne 0 ]; then
   echo "Error: Data dump failed."
