@@ -40,13 +40,13 @@ while true; do
       TEMP_DIR=$(mktemp -d)
       echo "Temporary directory: $TEMP_DIR"
       cp -r ./data $TEMP_DIR
-      rclone sync $TEMP_DIR $REMOTE_NAME:$REMOTE_PATH
+      rclone sync $TEMP_DIR/data $REMOTE_NAME:$REMOTE_PATH
       echo "Sync completed successfully!"
       rm -rf $TEMP_DIR
     else
       TEMP_DIR=$(mktemp -d)
       cp -r ./data $TEMP_DIR
-      rclone sync $TEMP_DIR $REMOTE_NAME:$REMOTE_PATH
+      rclone sync $TEMP_DIR/data $REMOTE_NAME:$REMOTE_PATH
       rm -rf $TEMP_DIR
     fi
     LAST_MODIFIED=$CURRENT_MODIFIED
