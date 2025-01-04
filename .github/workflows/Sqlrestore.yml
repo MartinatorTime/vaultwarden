@@ -32,4 +32,4 @@ jobs:
           
       - name: Restore SQL file
         run: |
-          /usr/lib/postgresql/16/bin/pg_restore -c -d ${{ secrets.DATABASE }} ${{ github.workspace }}/backup/SQL/*.sql
+          /usr/lib/postgresql/16/bin/pg_restore -c -O -x -d ${{ secrets.DATABASE }} ${{ github.workspace }}/backup/SQL/*.sql

@@ -27,7 +27,7 @@ jobs:
       - name: Dump PostgreSQL database
         run: |
           filename="SQL_BACKUP.sql"
-          /usr/lib/postgresql/16/bin/pg_dump -Fc -o -x -d ${{ secrets.DATABASE }} -f ${{ github.workspace }}/$filename >/dev/null
+          /usr/lib/postgresql/16/bin/pg_dump -Fc -O -x -d ${{ secrets.DATABASE }} -f ${{ github.workspace }}/$filename >/dev/null
 
       - name: Encrypt SQL file
         run: |

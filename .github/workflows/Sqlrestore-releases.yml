@@ -55,7 +55,7 @@ jobs:
       - name: Decrypt and Restore SQL file
         run: |
           echo "${{ secrets.PASS }}" | gpg --batch --yes --passphrase-fd 0 -d ${{ github.workspace }}/${{ github.event.inputs.filename }}
-          /usr/lib/postgresql/16/bin/pg_restore -c -o -x -d ${{ secrets.DATABASE }} ${{ github.workspace }}/*.sql
+          /usr/lib/postgresql/16/bin/pg_restore -c -O -x -d ${{ secrets.DATABASE }} ${{ github.workspace }}/*.sql
           rm ${{ github.workspace }}/*.sql
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
