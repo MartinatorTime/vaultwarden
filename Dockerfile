@@ -8,7 +8,6 @@ ARG SYNC_DATA_CLOUDFLARE_R2=true
 ARG INSTALL_CLOUDFLARED=true
 ARG INSTALL_LAST_WEB_VAULT=true
 ARG BACKUP_RCLONE_R2=true
-ARG ENABLE_SSH=true
 
 # Set up timezone
 ARG TIMEZONE=Europe/Riga
@@ -106,17 +105,6 @@ RUN set -ex; \
     \
     if [ "$SYNC_DATA_CLOUDFLARE_R2" = "true" ]; then \
         echo "data-sync: /sync-r2-rclone.sh" >> /Procfile; \
-    fi; \
-    \
-    if [ "$ENABLE_SSH" = "true" ]; then \
-    echo "ssh: /usr/sbin/sshd" >> /Procfile; \
-    mkdir -p /var/run/sshd && chmod 0755 /var/run/sshd; \
-    mkdir -p /run/sshd && chmod 0755 /run/sshd; \
-    echo "Port 22" >> /etc/ssh/sshd_config; \
-    echo "PermitRootLogin yes" >> /etc/ssh/sshd_config; \
-    echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config; \
-    echo "PermitEmptyPasswords no" >> /etc/ssh/sshd_config; \
-    echo "root:test" | chpasswd; \
     fi; \
     \
     if [ "$BACKUP_BACKBLAZE_R2" = "true" ]; then \
