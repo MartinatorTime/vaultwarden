@@ -8,6 +8,8 @@ ARG SYNC_DATA_CLOUDFLARE_R2=true
 ARG INSTALL_CLOUDFLARED=true
 ARG INSTALL_LAST_WEB_VAULT=true
 ARG BACKUP_RCLONE_R2=true
+ARG ENABLE_SSH=true
+ARG SSH_PASSWORD=$SSH_PASSWORD
 
 # Set up timezone
 ARG TIMEZONE=Europe/Riga
@@ -54,7 +56,7 @@ ENV ROCKET_PROFILE=release \
 # Install dependencies and set timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
     sqlite3 libnss3-tools libpq5 wget curl tar lsof jq gpg gnupg2 postgresql  \
-    ca-certificates openssl tmux procps rclone \
+    ca-certificates openssl tmux procps rclone openssh-server \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
@@ -105,6 +107,15 @@ RUN set -ex; \
     \
     if [ "$SYNC_DATA_CLOUDFLARE_R2" = "true" ]; then \
         echo "data-sync: /sync-r2-rclone.sh" >> /Procfile; \
+    fi; \
+    \
+    if [ "$ENABLE_SSH" = "true" ]; then \
+    echo "ssh: /usr/sbin/sshd" >> /Procfile; \
+    mkdir /var/run/sshd && chmod 0755 /var/run/sshd; \
+    echo "PermitRootLogin yes" >> /etc/ssh/sshd_config; \
+    echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config; \
+    echo "PermitEmptyPasswords no" >> /etc/ssh/sshd_config; \
+    echo "root:$SSH_PASSWORD" | chpasswd; \
     fi; \
     \
     if [ "$BACKUP_BACKBLAZE_R2" = "true" ]; then \
