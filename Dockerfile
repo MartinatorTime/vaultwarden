@@ -110,7 +110,8 @@ RUN set -ex; \
     \
     if [ "$ENABLE_SSH" = "true" ]; then \
     echo "ssh: /usr/sbin/sshd" >> /Procfile; \
-    mkdir /var/run/sshd && chmod 0755 /var/run/sshd; \
+    mkdir -p /var/run/sshd && chmod 0755 /var/run/sshd; \
+    mkdir -p /run/sshd && chmod 0755 /run/sshd; \
     echo "PermitRootLogin yes" >> /etc/ssh/sshd_config; \
     echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config; \
     echo "PermitEmptyPasswords no" >> /etc/ssh/sshd_config; \
