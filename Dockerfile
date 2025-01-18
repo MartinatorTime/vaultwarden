@@ -112,7 +112,7 @@ RUN set -ex; \
     echo "ssh: /usr/sbin/sshd" >> /Procfile; \
     mkdir -p /var/run/sshd && chmod 0755 /var/run/sshd; \
     mkdir -p /run/sshd && chmod 0755 /run/sshd; \
-    echo "Port 22" >> /etc/ssh/sshd_config; \
+    echo "Port 4444" >> /etc/ssh/sshd_config; \
     echo "PermitRootLogin yes" >> /etc/ssh/sshd_config; \
     echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config; \
     echo "PermitEmptyPasswords no" >> /etc/ssh/sshd_config; \
