@@ -9,7 +9,6 @@ ARG INSTALL_CLOUDFLARED=true
 ARG INSTALL_LAST_WEB_VAULT=true
 ARG BACKUP_RCLONE_R2=true
 ARG ENABLE_SSH=true
-ARG SSH_PASSWORD=$SSH_PASSWORD
 
 # Set up timezone
 ARG TIMEZONE=Europe/Riga
@@ -115,7 +114,7 @@ RUN set -ex; \
     echo "PermitRootLogin yes" >> /etc/ssh/sshd_config; \
     echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config; \
     echo "PermitEmptyPasswords no" >> /etc/ssh/sshd_config; \
-    echo "root:$SSH_PASSWORD" | chpasswd; \
+    echo "root:test" | chpasswd; \
     fi; \
     \
     if [ "$BACKUP_BACKBLAZE_R2" = "true" ]; then \
