@@ -69,7 +69,7 @@ RUN set -ex; \
     SUPERCRONIC_VERSION=$(curl -s https://api.github.com/repos/aptible/supercronic/releases/latest | jq -r '.tag_name'); \
     VAULT_VERSION=$(curl -s https://api.github.com/repos/dani-garcia/bw_web_builds/releases/latest | jq -r '.tag_name'); \
     CADDY_VERSION=$(curl -s https://api.github.com/repos/caddyserver/caddy/releases/latest | jq -r '.tag_name'); \
-    CLOUDFLARED_VERSION="2024.10.0"; \
+    CLOUDFLARED_VERSION=$(curl -s https://api.github.com/repos/cloudflare/cloudflared/releases/latest | jq -r '.tag_name'); \
     B2_VERSION=$(curl -s "https://api.github.com/repos/Backblaze/B2_Command_Line_Tool/releases/latest" | jq -r '.tag_name'); \
     \
     curl -L -o overmind.gz "https://github.com/DarthSim/overmind/releases/download/$OVERMIND_VERSION/overmind-${OVERMIND_VERSION}-linux-amd64.gz" || exit 1; \
