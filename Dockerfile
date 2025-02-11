@@ -122,4 +122,6 @@ RUN find . -name "*.sh" -exec chmod +x {} \;
 
 ENTRYPOINT ["/entrypoint.sh"]
 
+ENV OVERMIND_DAEMONIZE=1
+
 CMD ["overmind", "start", "-r", "all"]
