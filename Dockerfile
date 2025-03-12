@@ -54,7 +54,7 @@ ENV ROCKET_PROFILE=release \
 # Install dependencies and set timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
     sqlite3 libnss3-tools libpq5 wget curl tar lsof jq gpg gnupg2 postgresql  \
-    ca-certificates openssl tmux procps rclone openssh-server \
+    ca-certificates openssl tmux procps rclone fail2ban iptables \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
@@ -116,6 +116,9 @@ RUN set -ex; \
 # Copy files to docker
 COPY scripts/*.sh /
 COPY Caddyfile /etc/caddy/Caddyfile
+COPY fail2ban/jail.d /jail.d
+COPY fail2ban/action.d /action.d
+COPY fail2ban/filter.d /filter.d
 
 # Chmod the scripts
 RUN find . -name "*.sh" -exec chmod +x {} \;
@@ -124,6 +127,5 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 ENV OVERMIND_DAEMONIZE=0 \
     OVERMIND_AUTO_RESTART=all
-    #OVERMIND_FORMATION=cf_tunnel=2
 
 CMD ["overmind", "start"]
