@@ -116,9 +116,9 @@ RUN set -ex; \
 # Copy files to docker
 COPY scripts/*.sh /
 COPY Caddyfile /etc/caddy/Caddyfile
-COPY fail2ban/jail.d /etc/init.d/fail2ban/jail.d
-COPY fail2ban/action.d /etc/init.d/fail2ban/action.d
-COPY fail2ban/filter.d /etc/init.d/fail2ban/filter.d
+COPY fail2ban/jail.d /etc/fail2ban/jail.d
+COPY fail2ban/action.d /etc/fail2ban/action.d
+COPY fail2ban/filter.d /etc/fail2ban/filter.d
 
 # Chmod the scripts
 RUN find . -name "*.sh" -exec chmod +x {} \;
