@@ -8,7 +8,7 @@
 # }
 
 # {$DOMAIN}
-localhost:8080 {
+localhost {
         log {
                 level INFO
                 output file {$LOG_FILE} {
@@ -56,7 +56,7 @@ localhost:8080 {
         # Proxy everything to Rocket
         # if located at a sub-path the reverse_proxy line will look like:
         #   reverse_proxy /subpath/* <SERVER>:80
-        reverse_proxy localhost:80 {
+        reverse_proxy localhost:8008 {
                 # Trust Cloudflared proxy and set correct headers
                 trusted_proxies 127.0.0.1/32
                 header_up X-Real-IP {http.request.header.Cf-Connecting-Ip}
