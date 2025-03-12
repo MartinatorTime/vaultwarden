@@ -55,7 +55,9 @@ ENV ROCKET_PROFILE=release \
 # Install dependencies and set timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
     sqlite3 libnss3-tools libpq5 wget curl tar lsof jq gpg gnupg2 postgresql  \
-    ca-certificates openssl tmux procps rclone fail2ban iptables libcap2-bin \
+    ca-certificates openssl tmux procps rclone fail2ban iptables-legacy \
+    && update-alternatives --set iptables /usr/sbin/iptables-legacy \
+    && update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
