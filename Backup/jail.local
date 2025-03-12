@@ -21,9 +21,9 @@ ignoreip = 173.245.48.0/20 103.21.244.0/22 103.22.200.0/22 103.31.4.0/22 141.101
 filter = vaultwarden_login_bruteforce
 logpath = /data/vaultwarden.log
 chain = FORWARD
-banaction = action-ban-docker-vaultwarden-bruteforce
+banaction = action-ban-cloudflare
 # after three failed login attempts
-maxretry = 1
+maxretry = 2
 # during a time span of 300 seconds
 findtime = 300
 # if detected, ban first occurence for 600s

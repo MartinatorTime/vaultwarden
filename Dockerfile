@@ -123,6 +123,7 @@ COPY scripts/*.sh /
 COPY Caddyfile /etc/caddy/Caddyfile
 COPY fail2ban/jail.d /etc/fail2ban/jail.d
 COPY fail2ban/action.d /etc/fail2ban/action.d
+RUN chmod +x /etc/fail2ban/action.d/action-ban-cloudflare.conf
 COPY fail2ban/filter.d /etc/fail2ban/filter.d
 
 # Chmod the scripts
