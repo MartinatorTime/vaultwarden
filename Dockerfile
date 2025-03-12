@@ -129,9 +129,6 @@ COPY fail2ban/filter.d /etc/fail2ban/filter.d
 # Chmod the scripts
 RUN find . -name "*.sh" -exec chmod +x {} \;
 
-# Add NET_ADMIN capability for iptables
-RUN setcap cap_net_admin+ep /sbin/iptables
-
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Run with elevated privileges
