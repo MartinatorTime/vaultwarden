@@ -133,4 +133,4 @@ ENTRYPOINT ["/entrypoint.sh"]
 ENV OVERMIND_DAEMONIZE=0 \
     OVERMIND_AUTO_RESTART=all
 
-CMD ["overmind", "start"]
+CMD ["overmind", "start", "--cap-add=NET_ADMIN"]
