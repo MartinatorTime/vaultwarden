@@ -1,2 +1,2 @@
 #!/bin/bash
-cloudflared tunnel --no-autoupdate run --protocol auto --token "$CF_TOKEN"
+cloudflared tunnel --no-autoupdate run --protocol http2 --url "http://localhost:8080" --token "$CF_TOKEN"

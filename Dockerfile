@@ -2,7 +2,7 @@ FROM vaultwarden/server:latest
 
 # You can choose what to install with vaultwarden
 ARG INSTALL_SUPERCRONIC=true
-ARG INSTALL_CADDY=false
+ARG INSTALL_CADDY=true
 ARG BACKUP_BACKBLAZE_R2=false
 ARG SYNC_DATA_CLOUDFLARE_R2=true
 ARG INSTALL_CLOUDFLARED=true
@@ -14,7 +14,7 @@ ARG TIMEZONE=Europe/Riga
 
 ENV ROCKET_PROFILE=release \
     ROCKET_ADDRESS=0.0.0.0 \
-    ROCKET_PORT=8080 \
+    ROCKET_PORT=80 \
     ROCKET_WORKERS=20 \
     SSL_CERT_DIR=/etc/ssl/certs \
     EMERGENCY_ACCESS_ALLOWED=true \

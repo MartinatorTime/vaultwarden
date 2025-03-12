@@ -8,7 +8,7 @@
 # }
 
 # {$DOMAIN}
-localhost {
+localhost:8080 {
         log {
                 level INFO
                 output file {$LOG_FILE} {
@@ -56,12 +56,11 @@ localhost {
         # Proxy everything to Rocket
         # if located at a sub-path the reverse_proxy line will look like:
         #   reverse_proxy /subpath/* <SERVER>:80
-        reverse_proxy localhost:8080 {
-                # Send the true remote IP to Rocket, so that Vaultwarden can put this in the
-                # log, so that fail2ban can ban the correct IP.
+        reverse_proxy localhost:80 {
+                # Trust Cloudflared proxy and set correct headers
+                trusted_proxies 127.0.0.1/32
                 header_up X-Real-IP {http.request.header.Cf-Connecting-Ip}
-                # If you use Cloudflare proxying, replace remote_host with http.request.header.Cf-Connecting-Ip
-                # See https://developers.cloudflare.com/support/troubleshooting/restoring-visitor-ips/restoring-original-visitor-ips/
-                # and https://caddy.community/t/forward-auth-copy-headers-value-not-replaced/16998/4
+                header_up X-Forwarded-For {http.request.header.Cf-Connecting-Ip}
+                header_up Host {host}
         }
 }
