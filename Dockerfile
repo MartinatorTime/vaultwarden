@@ -8,6 +8,7 @@ ARG SYNC_DATA_CLOUDFLARE_R2=true
 ARG INSTALL_CLOUDFLARED=true
 ARG INSTALL_LAST_WEB_VAULT=true
 ARG BACKUP_RCLONE_R2=true
+ARG FAIL2BAN=true
 
 # Set up timezone
 ARG TIMEZONE=Europe/Riga
@@ -105,6 +106,10 @@ RUN set -ex; \
     \
     if [ "$SYNC_DATA_CLOUDFLARE_R2" = "true" ]; then \
         echo "data-sync: /sync-r2-rclone.sh" >> /Procfile; \
+    fi; \
+    \
+    if [ "$FAIL2BAN" = "true" ]; then \
+    echo "fail2ban: fail2ban-server" >> /Procfile; \
     fi; \
     \
     if [ "$BACKUP_BACKBLAZE_R2" = "true" ]; then \
