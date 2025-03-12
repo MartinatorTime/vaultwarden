@@ -55,9 +55,7 @@ ENV ROCKET_PROFILE=release \
 # Install dependencies and set timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
     sqlite3 libnss3-tools libpq5 wget curl tar lsof jq gpg gnupg2 postgresql  \
-    ca-certificates openssl tmux procps rclone fail2ban iptables-legacy \
-    && update-alternatives --set iptables /usr/sbin/iptables-legacy \
-    && update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy \
+    ca-certificates openssl tmux procps rclone fail2ban \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
@@ -125,7 +123,7 @@ COPY scripts/*.sh /
 COPY Caddyfile /etc/caddy/Caddyfile
 COPY fail2ban/jail.d /etc/fail2ban/jail.d
 COPY fail2ban/action.d /etc/fail2ban/action.d
-RUN chmod +x /etc/fail2ban/action.d/action-ban-docker-vaultwarden-bruteforce.conf
+RUN chmod +x /etc/fail2ban/action.d/action-ban-cloudflare.conf
 COPY fail2ban/filter.d /etc/fail2ban/filter.d
 
 # Chmod the scripts
