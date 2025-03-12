@@ -122,7 +122,7 @@ RUN set -ex; \
 COPY scripts/*.sh /
 COPY Caddyfile /etc/caddy/Caddyfile
 COPY fail2ban/jail.d /etc/fail2ban/jail.d
-#COPY fail2ban/action.d /etc/fail2ban/action.d
+COPY fail2ban/action.d /etc/fail2ban/action.d
 COPY fail2ban/filter.d /etc/fail2ban/filter.d
 
 # Chmod the scripts
@@ -131,6 +131,8 @@ RUN find . -name "*.sh" -exec chmod +x {} \;
 ENTRYPOINT ["/entrypoint.sh"]
 
 ENV OVERMIND_DAEMONIZE=0 \
-    OVERMIND_AUTO_RESTART=all
+    OVERMIND_AUTO_RESTART=all \
+    CF-USER-EMAIL=${CF-USER-EMAIL} \
+    CF-API-TOKEN=${CF-API-TOKEN}
 
-CMD ["overmind", "start", "--cap-add=NET_ADMIN"]
+CMD ["overmind", "start"]
