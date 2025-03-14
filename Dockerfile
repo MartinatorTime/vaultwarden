@@ -50,6 +50,7 @@ ENV ROCKET_PROFILE=release \
     REQUIRE_DEVICE_EMAIL=false \
     R2_DATA_SYNC_LOG=false \
     SYNC_DATA_CLOUDFLARE_R2=${SYNC_DATA_CLOUDFLARE_R2} \
+    FAIL2BAN=${FAIL2BAN} \
     FLY_SWAP=false
 
 # Install dependencies and set timezone
@@ -102,20 +103,10 @@ RUN set -ex; \
         wget -O caddy.tar.gz "https://github.com/caddyserver/caddy/releases/download/$CADDY_VERSION/caddy_${CADDY_VERSION#v}_linux_amd64.tar.gz" || exit 1; \
         tar -xzf caddy.tar.gz -C /usr/local/bin/ caddy; \
         echo "caddy: caddy run --config /etc/caddy/Caddyfile --adapter caddyfile" >> /Procfile; \
-        mkdir -p /etc/caddy; \
-        cp Caddyfile /etc/caddy/Caddyfile; \
     fi; \
     \
     if [ "$SYNC_DATA_CLOUDFLARE_R2" = "true" ]; then \
         echo "data-sync: /sync-r2-rclone.sh" >> /Procfile; \
-    fi; \
-    \
-    if [ "$FAIL2BAN" = "true" ]; then \
-        mkdir -p /etc/fail2ban; \
-        cp -r fail2ban/jail.d /etc/fail2ban/jail.d; \
-        cp -r fail2ban/action.d /etc/fail2ban/action.d; \
-        chmod +x /etc/fail2ban/action.d/action-ban-cloudflare.conf; \
-        cp -r fail2ban/filter.d /etc/fail2ban/filter.d; \
     fi; \
     \
     if [ "$BACKUP_BACKBLAZE_R2" = "true" ]; then \
@@ -126,6 +117,11 @@ RUN set -ex; \
 
 # Copy files to docker
 COPY scripts/*.sh /
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY fail2ban/jail.d /etc/fail2ban/jail.d
+COPY fail2ban/action.d /etc/fail2ban/action.d
+RUN chmod +x /etc/fail2ban/action.d/action-ban-cloudflare.conf
+COPY fail2ban/filter.d /etc/fail2ban/filter.d
 
 # Chmod the scripts
 RUN find . -name "*.sh" -exec chmod +x {} \;
