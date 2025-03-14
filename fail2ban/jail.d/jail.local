@@ -1,4 +1,5 @@
 [DEFAULT]
+allowipv6 = true
 # "bantime.increment" allows to use database for searching of previously banned ip's to increase a
 # default ban time using special formula, default it is banTime * 1, 2, 4, 8, 16, 32...
 bantime.increment = true

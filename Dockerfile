@@ -109,7 +109,7 @@ RUN set -ex; \
     fi; \
     \
     if [ "$FAIL2BAN" = "true" ]; then \
-    echo "fail2ban: fail2ban-server" >> /Procfile; \
+    echo "fail2ban: fail2ban-client start" >> /Procfile; \
     fi; \
     \
     if [ "$BACKUP_BACKBLAZE_R2" = "true" ]; then \
