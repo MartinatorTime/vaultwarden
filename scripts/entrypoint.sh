@@ -43,5 +43,16 @@ else
 echo "Skipping data sync from R2"
 fi
 
+if [[ "$FAIL2BAN" == "true" ]]; then
+    if ! fail2ban-client status >/dev/null 2>&1; then
+        echo "Starting Fail2Ban Server"
+        rm -f /var/run/fail2ban/fail2ban.pid
+        fail2ban-client start
+    else
+        echo "Fail2Ban Server is already running"
+    fi
+else
+    echo "Skipped Fail2Ban Server"
+fi
 # Run the original entrypoint
 exec "$@"
