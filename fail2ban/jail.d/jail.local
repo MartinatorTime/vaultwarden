@@ -11,6 +11,8 @@ bantime.rndtime = 2048
 # for bantime=60 the multipliers are minutes and equal: 5 min, 30 min, 1 hour, 5 hour, 12 hour, 1 day, 2 day
 bantime.multipliers = 1 5 30 60 300 720 1440 2880
 
+allowipv6 = auto
+
 [sshd]
 enabled = false
 
