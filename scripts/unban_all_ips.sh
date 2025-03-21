@@ -39,6 +39,7 @@ echo "$rules" | while read -r rule_id ip; do
   
   if [ "$delete_response" -eq 200 ]; then
     echo "Successfully unbanned $ip"
+    fail2ban-client unban --all
   else
     echo "Failed to unban $ip (HTTP $delete_response)"
   fi
