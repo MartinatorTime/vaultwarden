@@ -4,13 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       confirm:
-        description: 'Type "yes" to confirm merge'
-        required: true
-      source_branch_name:
-        description: 'Source branch to merge from'
-        required: true
-      target_branch_name:
-        description: 'Target branch to merge into'
+        description: 'Type "yes" to confirm merge from dev to main'
         required: true
 
 jobs:
@@ -28,12 +22,12 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-      - name: Merge branches
+      - name: Merge dev into main
         run: |
           if [ "${{ github.event.inputs.confirm }}" != "yes" ]; then
             echo "Confirmation not provided, aborting merge."
             exit 1
           fi
-          git checkout ${{ github.event.inputs.target_branch_name }}
-          git merge --no-ff origin/${{ github.event.inputs.source_branch_name }}
-          git push origin ${{ github.event.inputs.target_branch_name }}
+          git checkout main
+          git merge --no-ff origin/dev
+          git push origin main
