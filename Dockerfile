@@ -2,12 +2,13 @@ FROM vaultwarden/server:latest
 
 # You can choose what to install with vaultwarden
 ARG INSTALL_SUPERCRONIC=true
-ARG INSTALL_CADDY=false
+ARG INSTALL_CADDY=true
 ARG BACKUP_BACKBLAZE_R2=false
 ARG SYNC_DATA_CLOUDFLARE_R2=true
 ARG INSTALL_CLOUDFLARED=true
 ARG INSTALL_LAST_WEB_VAULT=true
 ARG BACKUP_RCLONE_R2=true
+ARG FAIL2BAN=true
 
 # Set up timezone
 ARG TIMEZONE=Europe/Riga
@@ -40,7 +41,7 @@ ENV ROCKET_PROFILE=release \
     ICON_DOWNLOAD_TIMEOUT=20 \
     ICON_BLACKLIST_NON_GLOBAL_IPS=true \
     EMAIL_CHANGE_ALLOWED=true \
-    EMAIL_ATTEMPTS_LIMIT=3 \
+    EMAIL_ATTEMPTS_LIMIT=30 \
     EMAIL_TOKEN_SIZE=6 \
     PASSWORD_HINTS_ALLOWED=false \
     LOGIN_RATELIMIT_MAX_BURST=5 \
@@ -49,12 +50,19 @@ ENV ROCKET_PROFILE=release \
     REQUIRE_DEVICE_EMAIL=false \
     R2_DATA_SYNC_LOG=false \
     SYNC_DATA_CLOUDFLARE_R2=${SYNC_DATA_CLOUDFLARE_R2} \
-    FLY_SWAP=false
+    FAIL2BAN=${FAIL2BAN} \
+    FLY_SWAP=false \
+    OVERMIND_DAEMONIZE=0 \
+    PRIVILEGED=true \
+    OVERMIND_AUTO_RESTART=all \
+    CFUSEREMAIL=${CFUSEREMAIL} \
+    CFAPITOKEN=${CFAPITOKEN} \
+    CFZONEID=${CFZONEID}
 
 # Install dependencies and set timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    sqlite3 libnss3-tools libpq5 wget curl tar lsof jq gpg gnupg2 postgresql \
-    ca-certificates openssl tmux procps rclone \
+    sqlite3 libnss3-tools libpq5 wget curl tar lsof jq gpg gnupg2 postgresql  \
+    ca-certificates openssl tmux procps rclone fail2ban \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime \
@@ -116,10 +124,14 @@ RUN set -ex; \
 # Copy files to docker
 COPY scripts/*.sh /
 COPY Caddyfile /etc/caddy/Caddyfile
+COPY fail2ban/jail.d /etc/fail2ban/jail.d
+COPY fail2ban/action.d /etc/fail2ban/action.d
+RUN chmod +x /etc/fail2ban/action.d/action-ban-cloudflare.conf
+COPY fail2ban/filter.d /etc/fail2ban/filter.d
 
 # Chmod the scripts
 RUN find . -name "*.sh" -exec chmod +x {} \;
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["overmind", "start", "-r", "all"]
+CMD ["overmind", "start"]

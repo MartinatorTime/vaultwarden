@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Check if the /data directory exists. If not, create it.
-if [ ! -d "/data" ]; then
-  mkdir -p /data
+if [ ! -d "./data" ]; then
+  mkdir -p ./data
 fi
 
 # Check if the /root/.config/rclone directory exists. If not, create it.
@@ -26,27 +26,27 @@ EOF
 chmod 600 /root/.config/rclone/rclone.conf
 
 REMOTE_NAME="Cloudflare"
-REMOTE_PATH="vaultwarden-data/data"
+REMOTE_PATH="vaultwarden-data"
 
-LAST_MODIFIED=$(find /data -type f -exec stat -c %Y {} \; | sort -n | tail -1)
+LAST_MODIFIED=$(find ./data -type f -exec stat -c %Y {} \; | sort -n | tail -1)
 
 while true; do
   # Get the current modification time of the files in the /data directory
-  CURRENT_MODIFIED=$(find /data -type f -exec stat -c %Y {} \; | sort -n | tail -1)
+  CURRENT_MODIFIED=$(find ./data -type f -exec stat -c %Y {} \; | sort -n | tail -1)
 
   # Check if the /data directory has been modified since the last sync
   if [ $CURRENT_MODIFIED -gt $LAST_MODIFIED ]; then
     if [ "$R2_DATA_SYNC_LOG" = "true" ]; then
       TEMP_DIR=$(mktemp -d)
       echo "Temporary directory: $TEMP_DIR"
-      cp -r /data $TEMP_DIR
-      rclone sync $TEMP_DIR $REMOTE_NAME:$REMOTE_PATH
+      cp -rp ./data $TEMP_DIR
+      rclone sync $TEMP_DIR/data $REMOTE_NAME:$REMOTE_PATH
       echo "Sync completed successfully!"
       rm -rf $TEMP_DIR
     else
       TEMP_DIR=$(mktemp -d)
-      cp -r /data $TEMP_DIR
-      rclone sync $TEMP_DIR $REMOTE_NAME:$REMOTE_PATH
+      cp -rp ./data $TEMP_DIR
+      rclone sync $TEMP_DIR/data $REMOTE_NAME:$REMOTE_PATH
       rm -rf $TEMP_DIR
     fi
     LAST_MODIFIED=$CURRENT_MODIFIED
