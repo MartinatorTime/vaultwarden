@@ -20,7 +20,7 @@
 
 function talkToBot() {
     message=$1
-    TGBotToken="${TGChatID}"
+    TGBotToken="${TGBotToken}"
     TGChatID="${TGChatID}"
     curl -s -X POST https://api.telegram.org/bot${TGBotToken}/sendMessage -d text="${message}" -d chat_id=${TGChatID} > /dev/null 2>&1
 }

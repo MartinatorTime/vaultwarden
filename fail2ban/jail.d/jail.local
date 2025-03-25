@@ -25,8 +25,8 @@ logpath = /data/vaultwarden.log
 chain = FORWARD
 banaction = action-ban-cloudflare
 maxretry = 3
-findtime = 14400
-bantime = 14400
+findtime = 600
+bantime = 600
 
 [vaultwarden-totp]
 enabled = true
@@ -37,8 +37,8 @@ logpath = /data/vaultwarden.log
 chain = FORWARD
 banaction = action-ban-cloudflare
 maxretry = 3
-findtime = 14400
-bantime = 14400
+findtime = 600
+bantime = 600
 
 [vaultwarden-admin]
 enabled = true
@@ -49,5 +49,5 @@ logpath = /data/vaultwarden.log
 chain = FORWARD
 banaction = action-ban-cloudflare
 maxretry = 3
-findtime = 14400
-bantime = 14400
+findtime = 600
+bantime = 600
