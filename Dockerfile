@@ -51,7 +51,13 @@ ENV ROCKET_PROFILE=release \
     R2_DATA_SYNC_LOG=false \
     SYNC_DATA_CLOUDFLARE_R2=${SYNC_DATA_CLOUDFLARE_R2} \
     FAIL2BAN=${FAIL2BAN} \
-    FLY_SWAP=false
+    FLY_SWAP=false \
+    OVERMIND_DAEMONIZE=0 \
+    PRIVILEGED=true \
+    OVERMIND_AUTO_RESTART=all \
+    CFUSEREMAIL=${CFUSEREMAIL} \
+    CFAPITOKEN=${CFAPITOKEN} \
+    CFZONEID=${CFZONEID}
 
 # Install dependencies and set timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -127,13 +133,5 @@ COPY fail2ban/filter.d /etc/fail2ban/filter.d
 RUN find . -name "*.sh" -exec chmod +x {} \;
 
 ENTRYPOINT ["/entrypoint.sh"]
-
-# Run with elevated privileges
-ENV OVERMIND_DAEMONIZE=0 \
-    PRIVILEGED=true \
-    OVERMIND_AUTO_RESTART=all \
-    CFUSEREMAIL=${CFUSEREMAIL} \
-    CFAPITOKEN=${CFAPITOKEN} \
-    CFZONEID=${CFZONEID}
 
 CMD ["overmind", "start"]
