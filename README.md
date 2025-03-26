@@ -8,6 +8,7 @@ This project automates the deployment and maintenance of Vaultwarden (formerly B
 * **Automatic Backups:** Secure daily backups to GitHub Releases, Backblaze B2, and Cloudflare R2.
 * **Automated Backup Pruning:** GitHub Actions automatically deletes old release files.
 * **Cloudflare Tunnel:** Secure and encrypted access to your Vaultwarden instance.
+* **Fail2ban integration:** Automatically bans brute force IP addresses on the Cloudflare network after 3 unsuccessful login attempts.
 * **Automatic Dependency Updates:**  Downloads the latest versions of:
     * Vaultwarden
     * Vaultwarden Web Vault
@@ -28,7 +29,9 @@ This project automates the deployment and maintenance of Vaultwarden (formerly B
 * [Supercronic](https://github.com/aptible/supercronic)
 * [Overmind](https://github.com/DarthSim/overmind)
 * [Caddy](https://caddyserver.com/)
-
+* [rclone](https://rclone.org/)
+* [Backblaze B2](https://www.backblaze.com/b2/)
+* [Fail2ban](https://www.fail2ban.org/)
 
 ## Getting Started
 
@@ -74,6 +77,14 @@ This project automates the deployment and maintenance of Vaultwarden (formerly B
         * `LOGIN_RATELIMIT_SECONDS` (e.g., `60`)
         * `ADMIN_SESSION_LIFETIME` (e.g., `3`)
         * `REQUIRE_DEVICE_EMAIL` (e.g., `false`)
+    * **General Settings:**
+        * `CFUSEREMAIL` (Cloudflare User Email)
+        * `CFAPITOKEN` (Cloudflare API Token)
+        * `CFZONEID` (Cloudflare Zone ID)
+    * **Overmind Settings:**
+        * `OVERMIND_DAEMONIZE` (Daemonize Overmind)
+        * `PRIVILEGED` (Privileged mode)
+        * `OVERMIND_AUTO_RESTART` (Auto restart Overmind)
     * **Feature Flags:**
         * `SYNC_DATA_CLOUDFLARE_R2` = true (To enable sync with r2)
         * `R2_DATA_SYNC_LOG` = false (Show output log with sync of skip sync)
@@ -84,6 +95,7 @@ This project automates the deployment and maintenance of Vaultwarden (formerly B
         * `INSTALL_SUPERCRONIC` = true (Install cron to every day making backup to github releases)
         * `BACKUP_RCLONE_R2` = true (If superchonic is activated it backup one time in day to your desired r2 endpoint)
         * `FLY_SWAP` = true (Create swap on fly.io)
+        * `FAIL2BAN` = true (Enable fail2ban)
 
 5. **GitHub Secrets:** Add the following secrets to your GitHub repository or to your provider dashboard:
     * `ADMIN_TOKEN`
