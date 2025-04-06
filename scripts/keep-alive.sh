@@ -10,8 +10,7 @@ if [[ "$KEEP_ALIVE" == "true" ]]; then
 
   # Make periodic requests to keep app alive
   while true; do
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Pinging $PING_URL"
-    curl -sS -o /dev/null "$PING_URL"
+    curl -sS -o /dev/null -H "X-Keep-Alive: true" "$PING_URL"
     sleep $((RANDOM % 241 + 180)) # Random between 3-7 minutes
   done
 fi

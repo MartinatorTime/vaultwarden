@@ -15,6 +15,10 @@ localhost:80 {
 			roll_size 10MB
 			roll_keep 10
 		}
+		# Exclude keep-alive requests from logs
+		exclude {
+			header X-Keep-Alive true
+		}
 	}
 
 	# Uncomment this if you want to get a cert via ACME (Let's Encrypt or ZeroSSL).
