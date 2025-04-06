@@ -15,9 +15,11 @@ localhost:80 {
 			roll_size 10MB
 			roll_keep 10
 		}
-		# Exclude keep-alive requests from logs
-		exclude {
-			header X-Keep-Alive true
+		format filter {
+			wrap singleline
+			fields {
+				request>header>X-Keep-Alive not "ping"
+			}
 		}
 	}
 
