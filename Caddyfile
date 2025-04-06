@@ -15,12 +15,6 @@ localhost:80 {
 			roll_size 10MB
 			roll_keep 10
 		}
-		format filter {
-			wrap singleline
-			fields {
-				request>header>X-Keep-Alive not "ping"
-			}
-		}
 	}
 
 	# Uncomment this if you want to get a cert via ACME (Let's Encrypt or ZeroSSL).
