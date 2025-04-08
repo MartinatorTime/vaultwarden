@@ -9,8 +9,6 @@ ARG INSTALL_CLOUDFLARED=true
 ARG INSTALL_LAST_WEB_VAULT=true
 ARG BACKUP_RCLONE_R2=true
 ARG FAIL2BAN=true
-ARG KEEP_ALIVE=false
-ARG HEALTHCHECK=true
 
 # Set up timezone
 ARG TIMEZONE=Europe/Riga
@@ -59,9 +57,7 @@ ENV ROCKET_PROFILE=release \
     OVERMIND_AUTO_RESTART=all \
     CFUSEREMAIL=${CFUSEREMAIL} \
     CFAPITOKEN=${CFAPITOKEN} \
-    CFZONEID=${CFZONEID} \
-    KEEP_ALIVE=${KEEP_ALIVE} \
-    HEALTHCHECK=${HEALTHCHECK}
+    CFZONEID=${CFZONEID}
 
 # Install dependencies and set timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -119,10 +115,6 @@ RUN set -ex; \
         echo "data-sync: /sync-r2-rclone.sh" >> /Procfile; \
     fi; \
     \
-    if [ "$KEEP_ALIVE" = "true" ]; then \
-    echo "keep-alive: /keep-alive.sh" >> /Procfile; \
-    fi; \
-    \
     if [ "$BACKUP_BACKBLAZE_R2" = "true" ]; then \
         curl -L -o /usr/local/bin/b2 "https://github.com/Backblaze/B2_Command_Line_Tool/releases/download/$B2_VERSION/b2-linux" || exit 1; \
         chmod +x /usr/local/bin/b2; \
@@ -141,7 +133,5 @@ COPY fail2ban/filter.d /etc/fail2ban/filter.d
 RUN find . -name "*.sh" -exec chmod +x {} \;
 
 ENTRYPOINT ["/entrypoint.sh"]
-
-HEALTHCHECK --interval=10s --timeout=5s --retries=3 CMD if [ "$HEALTHCHECK" = "true" ]; then curl -f $PING_URL || exit 1; else exit 0; fi
 
 CMD ["overmind", "start"]
