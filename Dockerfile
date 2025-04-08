@@ -9,7 +9,8 @@ ARG INSTALL_CLOUDFLARED=true
 ARG INSTALL_LAST_WEB_VAULT=true
 ARG BACKUP_RCLONE_R2=true
 ARG FAIL2BAN=true
-ARG KEEP_ALIVE=true
+ARG KEEP_ALIVE=false
+ARG HEALTHCHECK=true
 
 # Set up timezone
 ARG TIMEZONE=Europe/Riga
@@ -59,7 +60,8 @@ ENV ROCKET_PROFILE=release \
     CFUSEREMAIL=${CFUSEREMAIL} \
     CFAPITOKEN=${CFAPITOKEN} \
     CFZONEID=${CFZONEID} \
-    KEEP_ALIVE=${KEEP_ALIVE}
+    KEEP_ALIVE=${KEEP_ALIVE} \
+    HEALTHCHECK=${HEALTHCHECK}
 
 # Install dependencies and set timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -139,5 +141,7 @@ COPY fail2ban/filter.d /etc/fail2ban/filter.d
 RUN find . -name "*.sh" -exec chmod +x {} \;
 
 ENTRYPOINT ["/entrypoint.sh"]
+
+HEALTHCHECK --interval=10s --timeout=5s --retries=3 CMD if [ "$HEALTHCHECK" = "true" ]; then curl -f $PING_URL || exit 1; else exit 0; fi
 
 CMD ["overmind", "start"]
