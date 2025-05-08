@@ -22,13 +22,6 @@ if [[ "$KEEP_ALIVE" == "true" ]]; then
 
     # Make an asynchronous request
     curl -s -o /dev/null -w "%{http_code}" -H "User-Agent: $USER_AGENT" "$PING_URL"
-    REQUEST_STATUS=$?
-
-    if [ $REQUEST_STATUS -eq 0 ]; then
-      echo "$(date) - Ping to $PING_URL successful"
-    else
-      echo "$(date) - Ping to $PING_URL failed with status: $REQUEST_STATUS"
-    fi
 
     # Generate a random sleep interval between 30 seconds and 3 minutes (180 seconds)
     SLEEP_INTERVAL=$((RANDOM % 151 + 30))
