@@ -2,7 +2,7 @@ FROM vaultwarden/server:latest
 
 # You can choose what to install with vaultwarden
 ARG INSTALL_SUPERCRONIC=true
-ARG INSTALL_CADDY=true
+ARG INSTALL_CADDY=false
 ARG BACKUP_BACKBLAZE_R2=false
 ARG SYNC_DATA_CLOUDFLARE_R2=true
 ARG INSTALL_CLOUDFLARED=true
