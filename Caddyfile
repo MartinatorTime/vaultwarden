@@ -64,7 +64,5 @@ localhost {
 		header_up Host {host}
 	}
 
-	localhost:80 {
-		respond /health 200
-	}
+	respond /health 200
 }
