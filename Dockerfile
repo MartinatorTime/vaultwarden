@@ -9,6 +9,7 @@ ARG INSTALL_CLOUDFLARED=true
 ARG INSTALL_LAST_WEB_VAULT=true
 ARG BACKUP_RCLONE_R2=true
 ARG FAIL2BAN=true
+ARG KEEP_ALIVE=true
 
 # Set up timezone
 ARG TIMEZONE=Europe/Riga
@@ -57,7 +58,8 @@ ENV ROCKET_PROFILE=release \
     OVERMIND_AUTO_RESTART=all \
     CFUSEREMAIL=${CFUSEREMAIL} \
     CFAPITOKEN=${CFAPITOKEN} \
-    CFZONEID=${CFZONEID}
+    CFZONEID=${CFZONEID} \
+    KEEP_ALIVE=${KEEP_ALIVE}
 
 # Install dependencies and set timezone
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -113,6 +115,10 @@ RUN set -ex; \
     \
     if [ "$SYNC_DATA_CLOUDFLARE_R2" = "true" ]; then \
         echo "data-sync: /sync-r2-rclone.sh" >> /Procfile; \
+    fi; \
+    \
+    if [ "$KEEP_ALIVE" = "true" ]; then \
+    echo "keep-alive: /keep-alive.sh" >> /Procfile; \
     fi; \
     \
     if [ "$BACKUP_BACKBLAZE_R2" = "true" ]; then \
