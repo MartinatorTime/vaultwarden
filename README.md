@@ -43,6 +43,12 @@ This project automates the deployment and maintenance of Vaultwarden (formerly B
         * `TIMEZONE` (e.g., `Europe/Riga`)
     * **Vaultwarden Settings:**
         * `ROCKET_PROFILE` (e.g., `release`)
+    * **Fail2ban Settings:**
+        * `CFUSEREMAIL` (Cloudflare User Email)
+        * `CFAPITOKEN` (Cloudflare API Token - Requires Zone Read, Zone Edit, and Firewall Services Edit permissions)
+        * `CFZONEID` (Cloudflare Zone ID)
+    * **Vaultwarden Settings:**
+        * `ROCKET_PROFILE` (e.g., `release`)
         * `ROCKET_ADDRESS` (e.g., `0.0.0.0`)
         * `ROCKET_PORT` (e.g., `8080`)
         * `ROCKET_WORKERS` (e.g., `20`)
@@ -77,10 +83,6 @@ This project automates the deployment and maintenance of Vaultwarden (formerly B
         * `LOGIN_RATELIMIT_SECONDS` (e.g., `60`)
         * `ADMIN_SESSION_LIFETIME` (e.g., `3`)
         * `REQUIRE_DEVICE_EMAIL` (e.g., `false`)
-    * **General Settings:**
-        * `CFUSEREMAIL` (Cloudflare User Email)
-        * `CFAPITOKEN` (Cloudflare API Token)
-        * `CFZONEID` (Cloudflare Zone ID)
     * **Overmind Settings:**
         * `OVERMIND_DAEMONIZE` (Daemonize Overmind)
         * `PRIVILEGED` (Privileged mode)

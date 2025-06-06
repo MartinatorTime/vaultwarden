@@ -8,7 +8,7 @@
 # }
 
 # {$DOMAIN}
-localhost:80 {
+localhost {
 	log {
 		level INFO
 		output file {$LOG_FILE} {
@@ -62,5 +62,9 @@ localhost:80 {
 		header_up X-Real-IP {http.request.header.Cf-Connecting-Ip}
 		header_up X-Forwarded-For {http.request.header.Cf-Connecting-Ip}
 		header_up Host {host}
+	}
+
+	localhost:80 {
+		respond /health 200
 	}
 }
