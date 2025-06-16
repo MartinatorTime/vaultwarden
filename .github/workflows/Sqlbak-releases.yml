@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     # Set the schedule when you want to run this backup (e.g., daily at midnight).
-    - cron: '0 1 * * *'
+    - cron: '20 0 * * *'
 
 jobs:
   backup:

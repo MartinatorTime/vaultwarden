@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     # Set the schedule when you want to run this backup (e.g., daily at midnight).
-    - cron: '0 1 * * *'
+    - cron: '15 0 * * *'
 
 jobs:
   backup:
@@ -73,7 +73,7 @@ jobs:
           mv ${{ github.workspace }}/SQL_BACKUP.sql.gpg ${{ github.workspace }}/$filename
           rclone copy ${{ github.workspace }}/$filename $REMOTE_NAME:$REMOTE_PATH
           echo "FILENAME=$filename" >> $GITHUB_ENV
-          
+
         shell: /usr/bin/bash -e {0}
 
       - name: Debug $filename
