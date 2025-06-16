@@ -65,27 +65,23 @@ jobs:
           rm ${{ github.workspace }}/SQL_BACKUP.sql
 
       - name: Upload to Cloudflare R2
-        id: upload
         run: |
-          FILE_NAME="sql-backup-$(date +'%d_%m_%Y-%H_%M').sql.gpg"
+          filename="sql-backup-$(date +'%d_%m_%Y-%H_%M').sql.gpg"
           REMOTE_NAME="Cloudflare"
           REMOTE_PATH="vaultwarden/SQL"
 
-          mv ${{ github.workspace }}/SQL_BACKUP.sql.gpg ${{ github.workspace }}/$FILE_NAME
-          rclone copy ${{ github.workspace }}/$FILE_NAME $REMOTE_NAME:$REMOTE_PATH
+          mv ${{ github.workspace }}/SQL_BACKUP.sql.gpg ${{ github.workspace }}/$filename
+          rclone copy ${{ github.workspace }}/$filename $REMOTE_NAME:$REMOTE_PATH
 
-          # Set output for the filename
-          echo "::set-output name=filename::$FILE_NAME"
-
-      - name: Debug $FILE_NAME
+      - name: Debug $filename
         run: |
-          echo "FILE_NAME: ${{ steps.upload.outputs.filename }}"
-          ls -l ${{ github.workspace }}/${{ steps.upload.outputs.filename }}
+          echo "filename: $filename"
+          ls -l ${{ github.workspace }}/$filename
 
       - name: Clean up local files
         run: |
-          if [ -f "${{ github.workspace }}/${{ steps.upload.outputs.filename }}" ]; then
-            rm ${{ github.workspace }}/${{ steps.upload.outputs.filename }}
+          if [ -f "${{ github.workspace }}/$filename" ]; then
+            rm ${{ github.workspace }}/$filename
           else
-            echo "File ${{ github.workspace }}/${{ steps.upload.outputs.filename }} does not exist. Skipping cleanup."
+            echo "File ${{ github.workspace }}/$filename does not exist. Skipping cleanup."
           fi
