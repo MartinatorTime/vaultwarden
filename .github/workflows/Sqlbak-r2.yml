@@ -72,16 +72,18 @@ jobs:
 
           mv ${{ github.workspace }}/SQL_BACKUP.sql.gpg ${{ github.workspace }}/$filename
           rclone copy ${{ github.workspace }}/$filename $REMOTE_NAME:$REMOTE_PATH
+          echo "FILENAME=$filename" >> $GITHUB_ENV
+        shell: /usr/bin/bash -e {0}
 
       - name: Debug $filename
         run: |
           echo "filename: $filename"
-          ls -l ${{ github.workspace }}/$filename
+          ls -l ${{ github.workspace }}/${{ env.FILENAME }}
 
       - name: Clean up local files
         run: |
-          if [ -f "${{ github.workspace }}/$filename" ]; then
-            rm ${{ github.workspace }}/$filename
+          if [ -f "${{ github.workspace }}/${{ env.FILENAME }}" ]; then
+            rm ${{ github.workspace }}/${{ env.FILENAME }}
           else
-            echo "File ${{ github.workspace }}/$filename does not exist. Skipping cleanup."
+            echo "File ${{ github.workspace }}/${{ env.FILENAME }} does not exist. Skipping cleanup."
           fi
