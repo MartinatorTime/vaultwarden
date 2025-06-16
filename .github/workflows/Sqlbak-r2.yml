@@ -67,12 +67,13 @@ jobs:
       - name: Upload to Cloudflare R2
         run: |
           filename="sql-backup-$(date +'%d_%m_%Y-%H_%M').sql.gpg"
+          echo "FILENAME=$filename" >> $GITHUB_ENV
           REMOTE_NAME="Cloudflare"
           REMOTE_PATH="vaultwarden/SQL"
 
-          mv ${{ github.workspace }}/SQL_BACKUP.sql.gpg ${{ github.workspace }}/$filename
-          rclone copy ${{ github.workspace }}/$filename $REMOTE_NAME:$REMOTE_PATH
-          echo "FILENAME=$filename" >> $GITHUB_ENV
+          mv ${{ github.workspace }}/SQL_BACKUP.sql.gpg ${{ github.workspace }}/${{ env.FILENAME }}
+          rclone copy ${{ github.workspace }}/${{ env.FILENAME }} $REMOTE_NAME:$REMOTE_PATH
+          
         shell: /usr/bin/bash -e {0}
 
       - name: Debug $filename
