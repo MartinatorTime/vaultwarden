@@ -3,7 +3,7 @@ name: Delete Older than 7Days Release Files for All Tags
 on:
  workflow_dispatch:
  schedule:
-    - cron: '5 0 * * *'
+    - cron: '30 0 * * *'
 
 jobs:
  delete_files:

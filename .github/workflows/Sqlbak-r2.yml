@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     # Set the schedule when you want to run this backup (e.g., daily at midnight).
-    - cron: '0 1 * * *'
+    - cron: '15 0 * * *'
 
 jobs:
   backup:
@@ -24,14 +24,20 @@ jobs:
         run: |
           sudo apt-get install postgresql-client-16
 
+      - name: Install rclone
+        run: |
+          # Install rclone
+          sudo apt-get update
+          sudo apt-get install -y rclone
+
       - name: Ensure Rclone directory exists
         run: |
-          mkdir -p /root/.config/rclone
-          chmod 700 /root/.config/rclone
+          mkdir -p /home/runner/.config/rclone
+          chmod 700 /home/runner/.config/rclone
 
       - name: Configure Rclone
         run: |
-          cat << EOF > /root/.config/rclone/rclone.conf
+          cat << EOF > /home/runner/.config/rclone/rclone.conf
           [Cloudflare]
           type = s3
           provider = Cloudflare
@@ -42,7 +48,11 @@ jobs:
           acl = private
           no_check_bucket = true
           EOF
-          chmod 600 /root/.config/rclone/rclone.conf
+          chmod 600 /home/runner/.config/rclone/rclone.conf
+
+      - name: Verify Rclone configuration
+        run: |
+          rclone config show
 
       - name: Dump PostgreSQL database
         run: |
@@ -56,13 +66,25 @@ jobs:
 
       - name: Upload to Cloudflare R2
         run: |
-          FILE_NAME="sql-backup-$(date +'%d_%m_%Y-%H_%M').sql.gpg"
+          filename="sql-backup-$(date +'%d_%m_%Y-%H_%M').sql.gpg"
           REMOTE_NAME="Cloudflare"
           REMOTE_PATH="vaultwarden/SQL"
 
-          mv ${{ github.workspace }}/SQL_BACKUP.sql.gpg ${{ github.workspace }}/$FILE_NAME
-          rclone copy ${{ github.workspace }}/$FILE_NAME $REMOTE_NAME:$REMOTE_PATH
+          mv ${{ github.workspace }}/SQL_BACKUP.sql.gpg ${{ github.workspace }}/$filename
+          rclone copy ${{ github.workspace }}/$filename $REMOTE_NAME:$REMOTE_PATH
+          echo "FILENAME=$filename" >> $GITHUB_ENV
+
+        shell: /usr/bin/bash -e {0}
+
+      - name: Debug $filename
+        run: |
+          echo "filename: $filename"
+          ls -l ${{ github.workspace }}/${{ env.FILENAME }}
 
       - name: Clean up local files
         run: |
-          rm ${{ github.workspace }}/$FILE_NAME
+          if [ -f "${{ github.workspace }}/${{ env.FILENAME }}" ]; then
+            rm ${{ github.workspace }}/${{ env.FILENAME }}
+          else
+            echo "File ${{ github.workspace }}/${{ env.FILENAME }} does not exist. Skipping cleanup."
+          fi
