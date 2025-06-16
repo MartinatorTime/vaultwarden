@@ -65,6 +65,7 @@ jobs:
           rm ${{ github.workspace }}/SQL_BACKUP.sql
 
       - name: Upload to Cloudflare R2
+        id: upload
         run: |
           FILE_NAME="sql-backup-$(date +'%d_%m_%Y-%H_%M').sql.gpg"
           REMOTE_NAME="Cloudflare"
@@ -73,15 +74,18 @@ jobs:
           mv ${{ github.workspace }}/SQL_BACKUP.sql.gpg ${{ github.workspace }}/$FILE_NAME
           rclone copy ${{ github.workspace }}/$FILE_NAME $REMOTE_NAME:$REMOTE_PATH
 
+          # Set output for the filename
+          echo "::set-output name=filename::$FILE_NAME"
+
       - name: Debug $FILE_NAME
         run: |
-          echo "FILE_NAME: $FILE_NAME"
-          ls -l ${{ github.workspace }}/$FILE_NAME
+          echo "FILE_NAME: ${{ steps.upload.outputs.filename }}"
+          ls -l ${{ github.workspace }}/${{ steps.upload.outputs.filename }}
 
       - name: Clean up local files
         run: |
-          if [ -f "${{ github.workspace }}/$FILE_NAME" ]; then
-            rm ${{ github.workspace }}/$FILE_NAME
+          if [ -f "${{ github.workspace }}/${{ steps.upload.outputs.filename }}" ]; then
+            rm ${{ github.workspace }}/${{ steps.upload.outputs.filename }}
           else
-            echo "File ${{ github.workspace }}/$FILE_NAME does not exist. Skipping cleanup."
+            echo "File ${{ github.workspace }}/${{ steps.upload.outputs.filename }} does not exist. Skipping cleanup."
           fi
