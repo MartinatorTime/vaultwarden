@@ -10,7 +10,7 @@
 # {$DOMAIN}
 localhost:80 {
 	log {
-		level INFO
+		level ERROR
 		output file {$LOG_FILE} {
 			roll_size 10MB
 			roll_keep 10

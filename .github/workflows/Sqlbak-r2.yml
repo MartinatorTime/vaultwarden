@@ -1,0 +1,68 @@
+name: PostgreSQL Backup to Cloudflare R2
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Set the schedule when you want to run this backup (e.g., daily at midnight).
+    - cron: '0 1 * * *'
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+
+      - name: Add PostgreSQL repository
+        run: |
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt-get update
+
+      - name: Install PostgreSQL client 16
+        run: |
+          sudo apt-get install postgresql-client-16
+
+      - name: Ensure Rclone directory exists
+        run: |
+          mkdir -p /root/.config/rclone
+          chmod 700 /root/.config/rclone
+
+      - name: Configure Rclone
+        run: |
+          cat << EOF > /root/.config/rclone/rclone.conf
+          [Cloudflare]
+          type = s3
+          provider = Cloudflare
+          access_key_id = ${{ secrets.CF_ACCESS_KEY }}
+          secret_access_key = ${{ secrets.CF_ACCESS_KEY_SECRET }}
+          region = auto
+          endpoint = ${{ secrets.CF_R2_ENDPOINT }}
+          acl = private
+          no_check_bucket = true
+          EOF
+          chmod 600 /root/.config/rclone/rclone.conf
+
+      - name: Dump PostgreSQL database
+        run: |
+          filename="SQL_BACKUP.sql"
+          /usr/lib/postgresql/16/bin/pg_dump -Fc -O -x -d ${{ secrets.DATABASE }} -f ${{ github.workspace }}/$filename >/dev/null
+
+      - name: Encrypt SQL file
+        run: |
+          echo "${{ secrets.PASS }}" | gpg --batch --yes --passphrase-fd 0 --cipher-algo AES256 --symmetric ${{ github.workspace }}/SQL_BACKUP.sql >/dev/null
+          rm ${{ github.workspace }}/SQL_BACKUP.sql
+
+      - name: Upload to Cloudflare R2
+        run: |
+          FILE_NAME="sql-backup-$(date +'%d_%m_%Y-%H_%M').sql.gpg"
+          REMOTE_NAME="Cloudflare"
+          REMOTE_PATH="vaultwarden/SQL"
+
+          mv ${{ github.workspace }}/SQL_BACKUP.sql.gpg ${{ github.workspace }}/$FILE_NAME
+          rclone copy ${{ github.workspace }}/$FILE_NAME $REMOTE_NAME:$REMOTE_PATH
+
+      - name: Clean up local files
+        run: |
+          rm ${{ github.workspace }}/$FILE_NAME

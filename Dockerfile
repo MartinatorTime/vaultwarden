@@ -94,7 +94,6 @@ RUN set -ex; \
     \
     if [ "$BACKUP_RCLONE_R2" = "true" ]; then \
         echo "5 0 * * * /backup-r2-rclone.sh" >> /crontab; \
-        echo "2 0 * * * /backup-sql-r2.sh" >> /crontab; \
     fi; \
     \
     if [ "$INSTALL_LAST_WEB_VAULT" = "true" ]; then \
