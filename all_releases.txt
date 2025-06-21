@@ -1,6 +1,6 @@
 dani-garcia/vaultwarden: 1.34.1
 dani-garcia/bw_web_builds: v2025.5.0
-aptible/supercronic: v0.2.33
+aptible/supercronic: v0.2.34
 DarthSim/overmind: v2.5.1
 cloudflare/cloudflared: 2025.6.1
 caddyserver/caddy: v2.10.0
