@@ -1,11 +1,11 @@
 # Uncomment this in addition with the import admin_redir statement allow access to the admin interface only from local networks
-# (admin_redir) {
-#        @admin {
-#                path /admin*
-#                not remote_ip private_ranges
-#        }
-#        redir @admin /
-# }
+(admin_redir) {
+	@admin {
+		path /admin*
+		not remote_ip private_ranges
+	}
+	redir @admin /
+}
 
 # {$DOMAIN}
 localhost:80 {
@@ -51,11 +51,13 @@ localhost:80 {
 	}
 
 	# Uncomment to allow access to the admin interface only from local networks
-	# import admin_redir
+	import admin_redir
 
 	# Proxy everything to Rocket
 	# if located at a sub-path the reverse_proxy line will look like:
 	#   reverse_proxy /subpath/* <SERVER>:80
+	reverse_proxy /notifications/hub vaultwarden:3012
+
 	reverse_proxy localhost:8080 {
 		# Trust Cloudflared proxy and set correct headers
 		trusted_proxies 127.0.0.1/32
