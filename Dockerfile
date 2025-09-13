@@ -29,6 +29,9 @@ ENV ROCKET_PROFILE=release \
     ORG_EVENTS_ENABLED=false \
     ORG_GROUPS_ENABLED=false \
     PUSH_ENABLED=true \
+    #Comment this two bellow if you use Bitwarden's official push server
+    PUSH_RELAY_URI=https://api.bitwarden.eu \
+    PUSH_IDENTITY_URI=https://identity.bitwarden.eu \
     RELOAD_TEMPLATES=false \
     SENDS_ALLOWED=true \
     SHOW_PASSWORD_HINT=false \
