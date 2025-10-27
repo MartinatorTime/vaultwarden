@@ -1,0 +1,90 @@
+name: PostgreSQL Backup to Cloudflare R2
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Set the schedule when you want to run this backup (e.g., daily at midnight).
+    - cron: '15 0 * * *'
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+
+      - name: Add PostgreSQL repository
+        run: |
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt-get update
+
+      - name: Install PostgreSQL client 16
+        run: |
+          sudo apt-get install postgresql-client-16
+
+      - name: Install rclone
+        run: |
+          # Install rclone
+          sudo apt-get update
+          sudo apt-get install -y rclone
+
+      - name: Ensure Rclone directory exists
+        run: |
+          mkdir -p /home/runner/.config/rclone
+          chmod 700 /home/runner/.config/rclone
+
+      - name: Configure Rclone
+        run: |
+          cat << EOF > /home/runner/.config/rclone/rclone.conf
+          [Cloudflare]
+          type = s3
+          provider = Cloudflare
+          access_key_id = ${{ secrets.CF_ACCESS_KEY }}
+          secret_access_key = ${{ secrets.CF_ACCESS_KEY_SECRET }}
+          region = auto
+          endpoint = ${{ secrets.CF_R2_ENDPOINT }}
+          acl = private
+          no_check_bucket = true
+          EOF
+          chmod 600 /home/runner/.config/rclone/rclone.conf
+
+      - name: Verify Rclone configuration
+        run: |
+          rclone config show
+
+      - name: Dump PostgreSQL database
+        run: |
+          filename="SQL_BACKUP.sql"
+          /usr/lib/postgresql/16/bin/pg_dump -Fc -O -x -d ${{ secrets.DATABASE }} -f ${{ github.workspace }}/$filename >/dev/null
+
+      - name: Encrypt SQL file
+        run: |
+          echo "${{ secrets.PASS }}" | gpg --batch --yes --passphrase-fd 0 --cipher-algo AES256 --symmetric ${{ github.workspace }}/SQL_BACKUP.sql >/dev/null
+          rm ${{ github.workspace }}/SQL_BACKUP.sql
+
+      - name: Upload to Cloudflare R2
+        run: |
+          filename="sql-backup-$(date +'%d_%m_%Y-%H_%M').sql.gpg"
+          REMOTE_NAME="Cloudflare"
+          REMOTE_PATH="vaultwarden/SQL"
+
+          mv ${{ github.workspace }}/SQL_BACKUP.sql.gpg ${{ github.workspace }}/$filename
+          rclone copy ${{ github.workspace }}/$filename $REMOTE_NAME:$REMOTE_PATH
+          echo "FILENAME=$filename" >> $GITHUB_ENV
+
+        shell: /usr/bin/bash -e {0}
+
+      - name: Debug $filename
+        run: |
+          echo "filename: $filename"
+          ls -l ${{ github.workspace }}/${{ env.FILENAME }}
+
+      - name: Clean up local files
+        run: |
+          if [ -f "${{ github.workspace }}/${{ env.FILENAME }}" ]; then
+            rm ${{ github.workspace }}/${{ env.FILENAME }}
+          else
+            echo "File ${{ github.workspace }}/${{ env.FILENAME }} does not exist. Skipping cleanup."
+          fi

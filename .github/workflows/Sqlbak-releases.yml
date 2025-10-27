@@ -1,0 +1,59 @@
+name: PostgreSQL Backup to releases
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Set the schedule when you want to run this backup (e.g., daily at midnight).
+    - cron: '20 0 * * *'
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+
+      - name: Add PostgreSQL repository
+        run: |
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt-get update
+
+      - name: Install PostgreSQL client 16
+        run: |
+          sudo apt-get install postgresql-client-16
+
+      - name: Dump PostgreSQL database
+        run: |
+          filename="SQL_BACKUP.sql"
+          /usr/lib/postgresql/16/bin/pg_dump -Fc -O -x -d ${{ secrets.DATABASE }} -f ${{ github.workspace }}/$filename >/dev/null
+
+      - name: Encrypt SQL file
+        run: |
+          echo "${{ secrets.PASS }}" | gpg --batch --yes --passphrase-fd 0 --cipher-algo AES256 --symmetric ${{ github.workspace }}/SQL_BACKUP.sql >/dev/null
+          rm ${{ github.workspace }}/SQL_BACKUP.sql
+
+      - name: Push to GitHub Release
+        run: |
+          GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          GITHUB_USER="MartinatorTime"
+          REPO_NAME="vaultwarden"
+          TAG="SQL-BACKUP"
+
+          if ! curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/repos/$GITHUB_USER/$REPO_NAME/releases/tags/$TAG" | grep -q "tag_name" >/dev/null; then
+              
+              # Create a new release if it doesn't exist
+              RELEASE_ID=$(curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" \
+                  -d "{\"tag_name\": \"$TAG\"}" \
+                  "https://api.github.com/repos/$GITHUB_USER/$REPO_NAME/releases" | jq -r '.id')
+          else
+              # Get the existing release ID if it already exists
+              RELEASE_ID=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+                  "https://api.github.com/repos/$GITHUB_USER/$REPO_NAME/releases/tags/$TAG" | jq -r '.id')
+          fi
+          curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary "@${{ github.workspace }}/SQL_BACKUP.sql.gpg" \
+              "https://uploads.github.com/repos/$GITHUB_USER/$REPO_NAME/releases/$RELEASE_ID/assets?name=sql-backup-$(date +'%d_%m_%Y-%H_%M').sql.gpg" >/dev/null

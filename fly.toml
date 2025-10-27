@@ -1,0 +1,27 @@
+primary_region = "arn"
+swap_size_mb = 256
+
+[build]
+  dockerfile = "Dockerfile"
+
+[[mounts]]
+  source = "vw_data"
+  destination = "/data"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+  processes = ["app"]
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[services.ports]]
+    port = 8080
+    handlers = ["http"]
+    force_https = true
+
+  [[services.tcp_checks]]
+    interval = "15s"
+    timeout = "2s"
+    grace_period = "10s"

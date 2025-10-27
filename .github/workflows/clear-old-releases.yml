@@ -1,0 +1,42 @@
+name: Delete Older than 7Days Release Files for All Tags
+
+on:
+ workflow_dispatch:
+ schedule:
+    - cron: '30 0 * * *'
+
+jobs:
+ delete_files:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Delete old release files for all tags
+      run: |
+        # Get the current date in UTC and calculate the date 7 days ago
+        CURRENT_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        DAYS_AGO=$(date -u -d "$CURRENT_DATE - 7 days" +"%Y-%m-%dT%H:%M:%SZ")
+
+        # Use GitHub's REST API to list all release tags
+        TAGS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/$GITHUB_REPOSITORY/tags")
+
+        # Loop through each tag
+        for TAG_NAME in $(echo "$TAGS" | jq -r '.[].name'); do
+          # Find the release ID for the current tag
+          RELEASE_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/tags/$TAG_NAME" | jq -r '.id')
+
+          if [[ -n "$RELEASE_ID" ]]; then
+            ASSETS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets")
+            for ASSET_ID in $(echo "$ASSETS" | jq -r '.[].id'); do
+              ASSET_UPLOAD_DATE=$(echo "$ASSETS" | jq -r ".[] | select(.id == $ASSET_ID) | .updated_at")
+              if [[ "$ASSET_UPLOAD_DATE" < "$DAYS_AGO" ]]; then
+                echo "Deleting asset $ASSET_ID from release $RELEASE_ID..."
+                curl -X DELETE -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/assets/$ASSET_ID"
+              fi
+            done
+          fi
+        done
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
