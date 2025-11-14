@@ -139,7 +139,7 @@ RUN chmod +x /etc/fail2ban/action.d/action-ban-cloudflare.conf
 COPY fail2ban/filter.d /etc/fail2ban/filter.d
 
 # Chmod the scripts
-RUN find . -name "*.sh" -exec chmod +x {} \;
+RUN chmod +x /*.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 
