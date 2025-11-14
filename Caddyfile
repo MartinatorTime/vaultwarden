@@ -8,7 +8,7 @@
 # }
 
 # {$DOMAIN}
-http://:80 {
+localhost:80 {
 	#log {
 	#	level ERROR
 	#	output file {$LOG_FILE} {
