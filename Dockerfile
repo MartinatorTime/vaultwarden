@@ -127,9 +127,6 @@ RUN set -ex; \
         curl -L -o /usr/local/bin/b2 "https://github.com/Backblaze/B2_Command_Line_Tool/releases/download/$B2_VERSION/b2-linux" || exit 1; \
         chmod +x /usr/local/bin/b2; \
         echo "3 0 * * * /backup-r2-backblaze.sh" >> /crontab; \
-    fi; \
-    if [ "$FAIL2BAN" = "true" ]; then \
-        echo "fail2ban: fail2ban-server -f -x start" >> /Procfile; \
     fi
 
 # Copy files to docker

@@ -44,14 +44,15 @@ echo "Skipping data sync from R2"
 fi
 
 if [[ "$FAIL2BAN" == "true" ]]; then
-    echo "Preparing Fail2ban environment..."
-    mkdir -p /var/run/fail2ban
-    # Remove old sockets/pids that cause the "Server already running" error
-    rm -f /var/run/fail2ban/fail2ban.sock
-    rm -f /var/run/fail2ban/fail2ban.pid
-    
-    # Ensure the log file exists so Fail2ban doesn't crash on start
-    touch /data/vaultwarden.log
+    if ! fail2ban-client status >/dev/null 2>&1; then
+        echo "Starting Fail2Ban Server"
+        rm -f /var/run/fail2ban/fail2ban.pid
+        fail2ban-client start
+    else
+        echo "Fail2Ban Server is already running"
+    fi
+else
+    echo "Skipped Fail2Ban Server"
 fi
 # Run the original entrypoint
 exec "$@"
