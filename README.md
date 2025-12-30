@@ -44,7 +44,6 @@ This project automates the deployment and maintenance of Vaultwarden (formerly B
     * **Vaultwarden Settings:**
         * `ROCKET_PROFILE` (e.g., `release`)
     * **Fail2ban Settings:**
-        * `CFUSEREMAIL` (Cloudflare User Email)
         * `CFAPITOKEN` (Cloudflare API Token - Requires Zone Read, Zone Edit, and Firewall Services Edit permissions)
         * `CFZONEID` (Cloudflare Zone ID)
     * **Vaultwarden Settings:**
