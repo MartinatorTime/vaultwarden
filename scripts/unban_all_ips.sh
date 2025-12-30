@@ -2,7 +2,6 @@
 
 # Load Cloudflare credentials from environment
 CF_API_TOKEN="${CFAPITOKEN}"
-CF_USER_EMAIL="${CFUSEREMAIL}"
 CF_ZONE_ID="${CFZONEID}"
 
 # API endpoint and headers
