@@ -3,4 +3,4 @@ dani-garcia/bw_web_builds: v2026.4.1
 aptible/supercronic: v0.2.45
 DarthSim/overmind: v2.5.1
 cloudflare/cloudflared: 2026.3.0
-caddyserver/caddy: v2.11.1
+caddyserver/caddy: v2.11.3
