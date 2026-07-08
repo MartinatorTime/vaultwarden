@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - name: Install Task
-        uses: arduino/setup-task@v2
+        uses: arduino/setup-task@v3
         with:
           # renovate: datasource=github-releases depName=go-task/task
           version: 3.27.1
